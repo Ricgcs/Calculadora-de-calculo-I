@@ -1,0 +1,76 @@
+*{
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+}
+body{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+header{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+#formula
+{
+    width: 50%;
+    height: 50%;
+    border-radius: 0.5vw;
+    margin-right: 3.5%;
+    border: black solid 2px;
+    background-color: lightgrey;
+    display: flex;
+    align-items: center;    
+}
+
+.elemento{
+    height: auto;
+    width: auto;
+    display: flex;
+    /* background-color: aqua; */
+}
+
+.divSubPotencia{
+    font-size: 0.6vw;
+
+}
+.divSubPotencia:hover{
+    border: solid rgb(0, 123, 255) 2px;
+
+}
+.elemento:hover{
+    border: solid black 2px;
+}
+
+#formula:hover{
+    cursor: pointer;
+}
+
+#buttonFormula{
+    background-color: rgb(176, 176, 176);
+    color: black;
+    width: 5%;
+    height: 50%;
+    font-size: 90%;
+    border-radius: 0.7vw;
+    border: solid black 2px;
+}
+
+#buttonFormula:hover{
+    cursor: pointer;
+    background-color: gray;
+    color: white;
+
+
+}
+
+
+.divSub:hover{
+    border: solid black 2px;
+}

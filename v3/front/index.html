@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./index.css" />
+    <title>Calc</title>
+  </head>
+  <body>
+    <header>
+      <div id="formula"></div>
+      <button id="buttonFormula">click</button>
+    </header>
+    <script>
+      const termosOcultos = [
+        "Shift",
+        "Alt",
+        "Control",
+        "CapsLock",
+        "Tab",
+        "ControlAltGraph",
+        "Enter",
+        "Escape",
+        "Dead",
+        "Insert",
+      ];
+
+      const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+      const letras = [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+      ];
+
+      function validar(val) {
+        let res = false;
+        if (val != undefined && Number.isNaN(Number(val))) {
+          res = true;
+        }
+        return res;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        let qtdElementos = 0;
+        let qtdSubDivs = 0;
+        const formula = document.getElementById("formula");
+        let divAtual;
+        let divSubAtual;
+        let ultDig = [];
+        const elementos = [];
+        const buttonFormula = document.getElementById("buttonFormula");
+        let div;
+        let divSub;
+        let anterior;
+        let atual;
+
+        function adicionarElemento(tecla) {
+          if (qtdElementos == 0 || tecla.key == "Enter") {
+            div = document.createElement("div");
+            divSub = document.createElement("div");
+            div.id = `div${qtdElementos}`;
+            div.className = "elemento";
+
+            formula.appendChild(div);
+            divAtual = `div${qtdElementos}`;
+            divSub.id = `divSub${qtdSubDivs}`;
+            divSub.className = "divSub";
+            divSubAtual = `divSub${qtdSubDivs}`;
+            div.appendChild(divSub);
+
+            qtdSubDivs++;
+            qtdElementos++;
+          }
+
+          anterior = ultDig[ultDig.length - 1];
+          atual = tecla.key;
+
+          if (
+            anterior == "(" ||
+            atual == "(" ||
+            atual == ")" ||
+            anterior == ")"
+          ) {
+            div = document.createElement("div");
+            divSub = document.createElement("div");
+            div.id = `div${qtdElementos}`;
+            div.className = "elemento";
+
+            formula.appendChild(div);
+            divAtual = `div${qtdElementos}`;
+            divSub.id = `divSub${qtdSubDivs}`;
+            divSub.className = "divSub";
+            divSubAtual = `divSub${qtdSubDivs}`;
+            div.appendChild(divSub);
+
+            qtdSubDivs++;
+            qtdElementos++;
+          }
+
+          if (!termosOcultos.includes(tecla.key)) {
+            //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
+            //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
+
+            if (
+              (validar(anterior) !== false && validar(atual) == true) ||
+              (validar(anterior) !== true && validar(atual) == false)
+            ) {
+            } else {
+              //alert(qtdSubDivs);
+              divSub = document.createElement("div");
+              div.appendChild(divSub);
+              // alert(qtdSubDivs)
+              divSub.id = `divSub${qtdSubDivs}`;
+              divSub.className = "divSub";
+              divSubAtual = `divSub${qtdSubDivs}`;
+              qtdSubDivs++;
+            }
+            divSub.innerText += tecla.key;
+            ultDig.push(tecla.key);
+          } //termos ocultos
+          else{
+            if(tecla.key == "Dead"){
+              divSub = document.createElement("div");
+              div.appendChild(divSub);
+              alert(qtdSubDivs)
+              divSub.id = `divSub${qtdSubDivs}`;
+              divSub.className = "divSubPotencia";
+              divSubAtual = `divSub${qtdSubDivs}`;  
+              qtdSubDivs++;
+            }
+          }
+        }
+
+        function deletarUltimo() {
+          if (elementos.length > 0) {
+            const ultimo = elementos.pop();
+            formula.removeChild(ultimo);
+          }
+        }
+
+        formula.addEventListener("click", () => {
+          document.addEventListener("keydown", adicionarElemento);
+
+          buttonFormula.addEventListener("click", () => {
+            //alert("entrou")
+            document.removeEventListener("keydown");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
