@@ -11,7 +11,9 @@
       <div id="formula"></div>
       <button id="buttonFormula">click</button>
     </header>
+    <div id="corpo"></div>
     <script>
+      const operadores = ["+", "-", "/", "*"];
       const termosOcultos = [
         "Shift",
         "Alt",
@@ -67,11 +69,13 @@
         let qtdElementos = 0;
         let qtdSubDivs = 0;
         const formula = document.getElementById("formula");
-        let divAtual;
+        const corpo = document.getElementById("corpo");
+        let divAtual, classeAtual;
         let divSubAtual;
         let ultDig = [];
         const elementos = [];
         const buttonFormula = document.getElementById("buttonFormula");
+
         let div;
         let divSub;
         let anterior;
@@ -83,36 +87,40 @@
             divSub = document.createElement("div");
             div.id = `div${qtdElementos}`;
             div.className = "elemento";
+            classeAtual = "elemento";
 
             formula.appendChild(div);
             divAtual = `div${qtdElementos}`;
             divSub.id = `divSub${qtdSubDivs}`;
             divSub.className = "divSub";
+            classeAtual = "divSub";
             divSubAtual = `divSub${qtdSubDivs}`;
             div.appendChild(divSub);
 
             qtdSubDivs++;
             qtdElementos++;
+            teste = div.querySelectorAll("div");
           }
 
           anterior = ultDig[ultDig.length - 1];
           atual = tecla.key;
 
-          if (
-            anterior == "(" ||
+          if (anterior == "(" ||
             atual == "(" ||
             atual == ")" ||
-            anterior == ")"
+            anterior == ")"||
+             (operadores.includes(anterior) && classeAtual != "divSubPotencia" && anterior =="(")
           ) {
             div = document.createElement("div");
             divSub = document.createElement("div");
             div.id = `div${qtdElementos}`;
             div.className = "elemento";
-
+            classeAtual = "elemento";
             formula.appendChild(div);
             divAtual = `div${qtdElementos}`;
             divSub.id = `divSub${qtdSubDivs}`;
             divSub.className = "divSub";
+            classeAtual = "divSub";
             divSubAtual = `divSub${qtdSubDivs}`;
             div.appendChild(divSub);
 
@@ -126,29 +134,35 @@
 
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
-              (validar(anterior) !== true && validar(atual) == false)
+              (validar(anterior) !== true && validar(atual) == false) ||
+              classeAtual == "divSubPotencia"
             ) {
+   
             } else {
               //alert(qtdSubDivs);
+              
               divSub = document.createElement("div");
               div.appendChild(divSub);
               // alert(qtdSubDivs)
               divSub.id = `divSub${qtdSubDivs}`;
               divSub.className = "divSub";
+              classeAtual = "divSub";
+              
               divSubAtual = `divSub${qtdSubDivs}`;
               qtdSubDivs++;
             }
             divSub.innerText += tecla.key;
             ultDig.push(tecla.key);
           } //termos ocultos
-          else{
-            if(tecla.key == "Dead"){
+          else {
+            if (tecla.key == "Dead") {
               divSub = document.createElement("div");
               div.appendChild(divSub);
-              alert(qtdSubDivs)
+              alert(qtdSubDivs);
               divSub.id = `divSub${qtdSubDivs}`;
               divSub.className = "divSubPotencia";
-              divSubAtual = `divSub${qtdSubDivs}`;  
+              classeAtual = "divSubPotencia";
+              divSubAtual = `divSub${qtdSubDivs}`;
               qtdSubDivs++;
             }
           }
@@ -163,11 +177,47 @@
 
         formula.addEventListener("click", () => {
           document.addEventListener("keydown", adicionarElemento);
+        });
 
-          buttonFormula.addEventListener("click", () => {
-            //alert("entrou")
-            document.removeEventListener("keydown");
-          });
+        async function envio(rota, metodo, dado) {
+          try {
+            const envio = await fetch(`http://localhost:3000${rota}`, {
+              method: metodo,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(dado),
+            });
+            let envio2 = envio.json();
+            return envio2;
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        buttonFormula.addEventListener("click", async () => {
+          // let elementoOp = {
+          //   numero,
+          //   icognita,
+          //   potencia,
+          //   sinal,
+          //   operacao
+          // };
+          let elemento;
+          let stringDiv = document.getElementsByClassName("elemento");
+          let resposta = "";
+
+          console.log(stringDiv[0]);
+          // for (let a = 0; a < stringDiv.length; a++) {
+          //    elemento = stringDiv[a];
+          //    console.log(`${stringDiv[0]}`)
+          //   // resposta += `${elemento.textContent}`;
+          // }
+
+          let operacao = [];
+
+          // console.log("teste", resposta);
+
+          // const teste = await envio("/envio/string", "POST", resposta);
         });
       });
     </script>
