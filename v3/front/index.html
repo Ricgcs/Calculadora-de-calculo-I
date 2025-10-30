@@ -13,7 +13,8 @@
     </header>
     <div id="corpo"></div>
     <script>
-      const operadores = ["+", "-", "/", "*"];
+      const sinais = ["+", "-"]
+      const operadores = ["/", "*"];
       const termosOcultos = [
         "Shift",
         "Alt",
@@ -25,6 +26,7 @@
         "Escape",
         "Dead",
         "Insert",
+        "Backspace",
       ];
 
       const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -73,7 +75,9 @@
         let divAtual, classeAtual;
         let divSubAtual;
         let ultDig = [];
-        const elementos = [];
+        const elementoDiv = [];
+        const elementoSubDiv = [];
+
         const buttonFormula = document.getElementById("buttonFormula");
 
         let div;
@@ -82,7 +86,7 @@
         let atual;
 
         function adicionarElemento(tecla) {
-          if (qtdElementos == 0 || tecla.key == "Enter") {
+          if (qtdElementos == 0 || (tecla == "Enter" )) {
             div = document.createElement("div");
             divSub = document.createElement("div");
             div.id = `div${qtdElementos}`;
@@ -100,16 +104,25 @@
             qtdSubDivs++;
             qtdElementos++;
             teste = div.querySelectorAll("div");
+            elementoDiv.push(div);
+            elementoSubDiv.push(divSub);
           }
 
           anterior = ultDig[ultDig.length - 1];
-          atual = tecla.key;
+          atual = tecla;
 
-          if (anterior == "(" ||
+          if (
+            anterior == "(" ||
             atual == "(" ||
             atual == ")" ||
-            anterior == ")"||
-             (operadores.includes(anterior) && classeAtual != "divSubPotencia" && anterior =="(")
+            anterior == ")" ||
+            (operadores.includes(anterior) &&
+              classeAtual != "divSubPotencia" &&
+              anterior == "(")||
+            (sinais.includes(atual) && anterior != "(")||
+            (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(")||
+            (operadores.includes(atual))||
+            (operadores.includes(anterior))
           ) {
             div = document.createElement("div");
             divSub = document.createElement("div");
@@ -126,39 +139,59 @@
 
             qtdSubDivs++;
             qtdElementos++;
+            elementoDiv.push(div);
+            elementoSubDiv.push(divSub);
           }
 
-          if (!termosOcultos.includes(tecla.key)) {
+          if (!termosOcultos.includes(tecla)) {
             //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
             //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
 
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
-              (validar(anterior) !== true && validar(atual) == false) ||
-              classeAtual == "divSubPotencia"
+              (validar(anterior) !== true && validar(atual) == false) 
             ) {
-   
             } else {
-              //alert(qtdSubDivs);
-              
-              divSub = document.createElement("div");
-              div.appendChild(divSub);
-              // alert(qtdSubDivs)
-              divSub.id = `divSub${qtdSubDivs}`;
-              divSub.className = "divSub";
-              classeAtual = "divSub";
-              
-              divSubAtual = `divSub${qtdSubDivs}`;
-              qtdSubDivs++;
+              //alert(qtdSubDivs); 
+              // alert(classeAtual)
+              if (classeAtual == "divSubPotencia") {
+                // alert("entrar")
+                if ((validar(anterior) !== false && validar(atual) == true) || (validar(anterior) !== true && validar(atual) == false))
+                {
+                  // alert("entrou")
+                divSub = document.createElement("div");
+                divSub.appendChild(divSub);
+                // alert(qtdSubDivs)
+                divSub.id = `divSub${qtdSubDivs}`;
+                divSub.className = "divSub";
+                classeAtual = "divSub";
+
+                divSubAtual = `divSub${qtdSubDivs}`;
+                }
+              } else {
+                divSub = document.createElement("div");
+                div.appendChild(divSub);
+                // alert(qtdSubDivs)
+                divSub.id = `divSub${qtdSubDivs}`;
+                divSub.className = "divSub";
+                classeAtual = "divSub";
+
+                divSubAtual = `divSub${qtdSubDivs}`;
+                qtdSubDivs++;
+              }
             }
-            divSub.innerText += tecla.key;
-            ultDig.push(tecla.key);
+            divSub.innerText += tecla;
+            ultDig.push(tecla);
+            elementoSubDiv.push(divSub);
           } //termos ocultos
           else {
-            if (tecla.key == "Dead") {
+            if (tecla == "Backspace") {
+              deletarUltimo();
+            }
+            if (tecla == "Dead") {
               divSub = document.createElement("div");
               div.appendChild(divSub);
-              alert(qtdSubDivs);
+              // alert(qtdSubDivs);
               divSub.id = `divSub${qtdSubDivs}`;
               divSub.className = "divSubPotencia";
               classeAtual = "divSubPotencia";
@@ -169,14 +202,19 @@
         }
 
         function deletarUltimo() {
-          if (elementos.length > 0) {
-            const ultimo = elementos.pop();
+          if (elementoDiv.length > 0) {
+            // const ultimo = elementos.pop();
+            let ultimo = formula.lastChild;
             formula.removeChild(ultimo);
+            divAtual = elementoDiv[elementoDiv.length - 1];
+            elementoDiv.pop();
+            // alert(elementoDiv.length);
+            console.log(elementoDiv[elementoDiv.length - 1]);
           }
         }
-
-        formula.addEventListener("click", () => {
-          document.addEventListener("keydown", adicionarElemento);
+        let a = 0;
+        document.addEventListener("keydown", (tecla) => {
+          adicionarElemento(tecla.key);
         });
 
         async function envio(rota, metodo, dado) {
@@ -195,29 +233,42 @@
           }
         }
         buttonFormula.addEventListener("click", async () => {
-          // let elementoOp = {
-          //   numero,
-          //   icognita,
-          //   potencia,
-          //   sinal,
-          //   operacao
-          // };
-          let elemento;
+          let elemento,teste, contador;
           let stringDiv = document.getElementsByClassName("elemento");
-          let resposta = "";
+          let resposta = [];
+        
+          console.log("oi", stringDiv[0]);
 
-          console.log(stringDiv[0]);
-          // for (let a = 0; a < stringDiv.length; a++) {
-          //    elemento = stringDiv[a];
-          //    console.log(`${stringDiv[0]}`)
-          //   // resposta += `${elemento.textContent}`;
-          // }
+          for (let a = 0; a < stringDiv.length; a++) {
+            
+            contador = 0;
+            elemento = stringDiv[a];
+            
+            teste = elemento.getElementsByTagName("div");                       
+            // console.log("Tamanho: "+tamanho);              
+            
+            
+            for(contador;contador < teste.length;contador++){     
+                    let valor = teste[contador].textContent;  
+                    let tamanho = teste.length;
+                    console.log("Elemento2: "+valor+"\n tamanho: "+tamanho);  
+                            
+                    if(valor == " "){
+                    alert("entrou")
+                    }
+
+
+            }
+
+
+            
+          }
 
           let operacao = [];
+          console.log("Resultado: ", operacao);
+          //  console.log("teste", resposta);
 
-          // console.log("teste", resposta);
-
-          // const teste = await envio("/envio/string", "POST", resposta);
+          //  const testeEnvio = await envio("/envio/string", "POST", resposta);
         });
       });
     </script>
