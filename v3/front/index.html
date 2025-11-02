@@ -13,8 +13,8 @@
     </header>
     <div id="corpo"></div>
     <script>
-      const sinais = ["+", "-"]
-      const operadores = ["/", "*"];
+      const sinais = ["+", "-"];
+      const operadores = ["*"];
       const termosOcultos = [
         "Shift",
         "Alt",
@@ -27,6 +27,7 @@
         "Dead",
         "Insert",
         "Backspace",
+        "Meta",
       ];
 
       const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -86,7 +87,13 @@
         let atual;
 
         function adicionarElemento(tecla) {
-          if (qtdElementos == 0 || (tecla == "Enter" )) {
+          // console.log(qtdElementos);
+          if (
+            qtdElementos == 0 ||
+            tecla == "Enter" ||
+            (anterior == "Backspace" &&
+              (numeros.includes(tecla) || letras.includes(tecla)))
+          ) {
             div = document.createElement("div");
             divSub = document.createElement("div");
             div.id = `div${qtdElementos}`;
@@ -118,11 +125,11 @@
             anterior == ")" ||
             (operadores.includes(anterior) &&
               classeAtual != "divSubPotencia" &&
-              anterior == "(")||
-            (sinais.includes(atual) && anterior != "(")||
-            (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(")||
-            (operadores.includes(atual))||
-            (operadores.includes(anterior))
+              anterior == "(") ||
+            (sinais.includes(atual) && anterior != "(") ||
+            (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(") ||
+            operadores.includes(atual) ||
+            operadores.includes(anterior)
           ) {
             div = document.createElement("div");
             divSub = document.createElement("div");
@@ -149,24 +156,28 @@
 
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
-              (validar(anterior) !== true && validar(atual) == false) 
+              (validar(anterior) !== true && validar(atual) == false) ||
+              anterior == "/" ||
+              atual == "/"
             ) {
             } else {
-              //alert(qtdSubDivs); 
+              //alert(qtdSubDivs);
               // alert(classeAtual)
               if (classeAtual == "divSubPotencia") {
                 // alert("entrar")
-                if ((validar(anterior) !== false && validar(atual) == true) || (validar(anterior) !== true && validar(atual) == false))
-                {
+                if (
+                  (validar(anterior) !== false && validar(atual) == true) ||
+                  (validar(anterior) !== true && validar(atual) == false)
+                ) {
                   // alert("entrou")
-                divSub = document.createElement("div");
-                divSub.appendChild(divSub);
-                // alert(qtdSubDivs)
-                divSub.id = `divSub${qtdSubDivs}`;
-                divSub.className = "divSub";
-                classeAtual = "divSub";
+                  divSub = document.createElement("div");
+                  divSub.appendChild(divSub);
+                  // alert(qtdSubDivs)
+                  divSub.id = `divSub${qtdSubDivs}`;
+                  divSub.className = "divSub";
+                  classeAtual = "divSub";
 
-                divSubAtual = `divSub${qtdSubDivs}`;
+                  divSubAtual = `divSub${qtdSubDivs}`;
                 }
               } else {
                 divSub = document.createElement("div");
@@ -187,6 +198,7 @@
           else {
             if (tecla == "Backspace") {
               deletarUltimo();
+              elementoDiv.pop()
             }
             if (tecla == "Dead") {
               divSub = document.createElement("div");
@@ -202,14 +214,16 @@
         }
 
         function deletarUltimo() {
-          if (elementoDiv.length > 0) {
-            // const ultimo = elementos.pop();
+          //const ultimo = elementos.pop();
+          if (qtdElementos != 0) {
             let ultimo = formula.lastChild;
             formula.removeChild(ultimo);
             divAtual = elementoDiv[elementoDiv.length - 1];
             elementoDiv.pop();
             // alert(elementoDiv.length);
-            console.log(elementoDiv[elementoDiv.length - 1]);
+            // console.log(elementoDiv[elementoDiv.length - 1]);
+            anterior = "Backspace";
+            qtdElementos--;
           }
         }
         let a = 0;
@@ -233,35 +247,28 @@
           }
         }
         buttonFormula.addEventListener("click", async () => {
-          let elemento,teste, contador;
+          let elemento, teste, contador;
           let stringDiv = document.getElementsByClassName("elemento");
           let resposta = [];
-        
+
           console.log("oi", stringDiv[0]);
 
           for (let a = 0; a < stringDiv.length; a++) {
-            
             contador = 0;
             elemento = stringDiv[a];
-            
-            teste = elemento.getElementsByTagName("div");                       
-            // console.log("Tamanho: "+tamanho);              
-            
-            
-            for(contador;contador < teste.length;contador++){     
-                    let valor = teste[contador].textContent;  
-                    let tamanho = teste.length;
-                    console.log("Elemento2: "+valor+"\n tamanho: "+tamanho);  
-                            
-                    if(valor == " "){
-                    alert("entrou")
-                    }
 
+            teste = elemento.getElementsByTagName("div");
+            // console.log("Tamanho: "+tamanho);
 
+            for (contador; contador < teste.length; contador++) {
+              let valor = teste[contador].textContent;
+              let tamanho = teste.length;
+              console.log("Elemento2: " + valor + "\n tamanho: " + tamanho);
+
+              if (valor == " ") {
+                alert("entrou");
+              }
             }
-
-
-            
           }
 
           let operacao = [];
