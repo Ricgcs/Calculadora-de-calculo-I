@@ -138,6 +138,7 @@ app.post("/envio/string",(req,res)=>{
         }
         return res
     }
+
     function substituirX(obj,x){
         for(let i =0;i<obj.length;i++){
             obj[i].variavel = x
@@ -181,8 +182,7 @@ app.post("/envio/string",(req,res)=>{
             }
         }
         console.log(`X não tem raiz no intervalo {${inicio},${fim}}`)
-    }
-    
+    }  
 })
 
 app.listen(3000,()=>{

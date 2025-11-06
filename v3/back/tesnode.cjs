@@ -19,6 +19,7 @@ console.log("2 - Integral")
 console.log("3 - Substituir o valor de X")
 console.log("4 - Ponto Critico")
 console.log("5 - Bissecção")
+console.log("5 - Derivada 2ºOrdem")
 console.log("0 - Para sair da calculadora")
 let separacao = expressao.split(" ")
 let operadores = ['+','-']
@@ -50,9 +51,13 @@ switch(Number(metodo)){
         pontoCritico()
         break
     case 5:
-        const i = Number(prompt("Digite o inicio"))
-        const f = Number(prompt("Digite o fim"))
+        const i = Number(prompt("Digite o inicio: "))
+        const f = Number(prompt("Digite o fim: "))
         separacao = bisseccao(i,f,separacao)
+        break
+    case 6:
+        tombo(separacao)
+        tombo(separacao)
         break
     default:
         console.log("Saindo da Calculadora")
@@ -96,7 +101,7 @@ function tombo(obj)
                     obj[i].potencia -= 1    
             }
         }
-    }
+    }''
     function integralTombo(obj){
         for(let i = 0;i<obj.length;i++){
             // if(obj[i].variavel == "sen(x)"){
@@ -164,15 +169,15 @@ function tombo(obj)
             console.log("Intervalo Invalido")
             return 
         }
-        while(Math.abs(fim-inicio) > 0.0001){
-            fInicio = substituirX(obj,inicio)
+        while(true){
             meio = (inicio+fim)/2
             fMeio = substituirX(obj,meio)
-
+            fInicio = substituirX(obj,inicio)
+            if(Math.abs(fMeio) >= 0.0001) break
             if(Math.sign(fMeio)  == Math.sign(fInicio)){
                 inicio = meio      
             }
             else fim = meio            
         }
-        return meio
+        return Math.floor(meio)
     }
