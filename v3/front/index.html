@@ -9,12 +9,45 @@
   <body>
     <header>
       <div id="formula"></div>
-      <button id="buttonFormula">click</button>
+      <button id="buttonFormula" class="btocalcular"""">
+        Click
+      </button>
     </header>
-    <div id="corpo"></div>
+    <div id="corpo">
+      <div class="botoes">
+        <button class="operador" onclick="adicionar('+')">+</button>
+        <button class="operador" onclick="adicionar('-')">-</button>
+        <button class="operador" onclick="adicionar('*')">*</button>
+        <button class="numero" onclick="adicionar('1')">1</button>
+        <button class="numero" onclick="adicionar('2')">2</button>
+        <button class="numero" onclick="adicionar('3')">3</button>
+
+        <button class="operador" onclick="adicionar('√')">√</button>
+        <button class="operador" onclick="adicionar('/')">/</button>
+        <button class="operador" onclick="adicionar('∫')">∫</button>
+        <button class="numero" onclick="adicionar('4')">4</button>
+        <button class="numero" onclick="adicionar('5')">5</button>
+        <button class="numero" onclick="adicionar('6')">6</button>
+
+        <button class="operador" onclick="adicionar('Dead')">^</button>
+        <button class="operador" onclick="adicionar('Pc')">Pc</button>
+        <button class="operador" onclick="adicionar('d/dx')">d/dx</button>
+        <button class="numero" onclick="adicionar('7')">7</button>
+        <button class="numero" onclick="adicionar('8')">8</button>
+        <button class="numero" onclick="adicionar('9')">9</button>
+
+        <button class="operador" onclick="adicionar('MIN')">MIN</button>
+        <button class="operador" onclick="adicionar('MAX')">MAX</button>
+        <button class="operador" onclick="adicionar('x')">x</button>
+        <button class="apagar" onclick="apagarTudo()">C</button>
+        <button class="numero" onclick="adicionar('0')">0</button>
+        <button class="apagar" onclick="apagarUltimo()">⌫</button>
+      </div>
+    </div>
     <script>
       const sinais = ["+", "-"];
       const operadores = ["*"];
+      const op2 = ["+", "-", "*"];
       const termosOcultos = [
         "Shift",
         "Alt",
@@ -87,7 +120,16 @@
         let atual;
 
         function adicionarElemento(tecla) {
-          // console.log(qtdElementos);
+          // let testeElemento = elementoSubDiv[qtdElementos];
+          // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
+          // if(testeElemento == undefined){
+          // console.log("testeElemento");
+
+          // }
+          // else{
+          // console.log(testeElemento,qtdElementos);
+
+          // }
           if (
             qtdElementos == 0 ||
             tecla == "Enter" ||
@@ -198,7 +240,7 @@
           else {
             if (tecla == "Backspace") {
               deletarUltimo();
-              elementoDiv.pop()
+              elementoDiv.pop();
             }
             if (tecla == "Dead") {
               divSub = document.createElement("div");
@@ -246,6 +288,28 @@
             console.log(error);
           }
         }
+
+        window.adicionar = function (valor) {
+          adicionarElemento(valor);
+        };
+
+        // Função para apagar tudo (C)
+        function limparTudo() {
+          document.getElementById("calc").value = "";
+          document.getElementById("passo-a-passo").textContent = "";
+          document.getElementById("valor-x").value = "";
+        }
+
+        // Função para apagar o último caractere (⌫)
+        window.apagarUltimo = function () {
+          deletarUltimo();
+        };
+
+        window.apagarTudo = function () {
+          formula.innerHTML = "";
+          qtdElementos = 0;
+        };
+
         buttonFormula.addEventListener("click", async () => {
           let elemento, teste, contador;
           let stringDiv = document.getElementsByClassName("elemento");
@@ -254,25 +318,67 @@
           console.log("oi", stringDiv[0]);
 
           for (let a = 0; a < stringDiv.length; a++) {
+            let constante = 1;
+            let icognita = null;
+            let potencia = 1;
+            let sinal = "+";
             contador = 0;
             elemento = stringDiv[a];
 
             teste = elemento.getElementsByTagName("div");
-            // console.log("Tamanho: "+tamanho);
 
-            for (contador; contador < teste.length; contador++) {
+            // Filtra elementos vazios na contagem
+            // let tamanhoReal = Array.from(teste).filter(
+            //   (el) => el.textContent.trim() !== ""
+            // ).length;
+            // console.log(`${tamanhoReal}`);
+
+           let tamanhoReal = teste.length
+            for (contador; contador < tamanhoReal; contador++) {
+              let elmet = teste[contador];
               let valor = teste[contador].textContent;
-              let tamanho = teste.length;
-              console.log("Elemento2: " + valor + "\n tamanho: " + tamanho);
-
-              if (valor == " ") {
-                alert("entrou");
+              let tamanho = tamanhoReal; // usa o tamanho sem elementos vazios
+              let posBarra;
+              let antesBarra;
+              let depoisBarra;
+              if(valor != ""){
+                console.log("Aqui ",valor, elmet)
+            
+              if(elmet.className == "divSubPotencia"){
+                potencia = valor
               }
+              else if(op2.includes(valor) || valor == "(" || valor == ")"){
+                  resposta.push(valor);
+              }
+              else if(!validar(valor)){
+                constante = valor
+              }
+
+              else if(validar(valor) && !op2.includes(valor)){
+                icognita = valor
+              }
+              }
+
             }
+
+            let obj = {
+              constante: constante,
+              icognita:icognita,
+              potencia:potencia
+            }
+            if(obj.constante !== 1 || letras.includes(obj.icognita)){
+            resposta.push(obj)
+            }
+            else{
+              alert("entrou")
+            }
+        
+              // console.log(obj)
+            console.log(resposta)
           }
 
           let operacao = [];
-          console.log("Resultado: ", operacao);
+          console.log("Resultado: ", resposta);
           //  console.log("teste", resposta);
 
           //  const testeEnvio = await envio("/envio/string", "POST", resposta);
