@@ -29,7 +29,8 @@ for(let i = 0;i<separacao.length;i++){
     if(separacao[i].includes("^")) divs = separacao[i].split(/(x\^)/)
     else divs = separacao[i].split(/(x)/)
     if(divs[2] == '') divs[2] = "1"
-    if(divs[0] == '') divs[0] = "1"
+    if(divs[0] == '') divs[0] = "1/1"
+    divs[0] = divs[0].split(/(\/)/)
     separacao[i] = new Expressoes(divs[0],divs[1],divs[2])
 }
 const metodo = prompt("método: ")
@@ -42,19 +43,26 @@ switch(Number(metodo)){
         break
     case 3:
         const x = prompt("Digite valor de X: ")
-        substituirX(separacao,x)
+        copia = separacao
+        separacao = substituirX(copia,x)
         break
     case 4:
         pontoCritico()
         break
     case 5:
-        console.log("Digite o inicio")
-        console.log("Digite o fim")
-        bisseccao()
+        const i = Number(prompt("Digite o inicio"))
+        const f = Number(prompt("Digite o fim"))
+        separacao = bisseccao(i,f,separacao)
         break
     default:
         console.log("Saindo da Calculadora")
         break
+}
+
+function printExpr(e){
+    for(let i = 0;i<e.length;i++){
+        e[i].coeficiente = n.join("")
+    }
 }
 
 console.log(separacao)
@@ -84,14 +92,8 @@ function tombo(obj)
             if(obj[i].potencia == 1) obj[i] = obj[i].coeficiente
             else if(obj[i].variavel == null) obj[i] = 0
             else{
-                if(obj[i].coeficiente.length > 1){
                     obj[i].coeficiente[0] *= obj[i].potencia
                     obj[i].potencia -= 1    
-                }
-                else{
-                    obj[i].coeficiente *= obj[i].potencia
-                    obj[i].potencia -= 1
-                }
             }
         }
     }
@@ -112,21 +114,24 @@ function tombo(obj)
             // if(obj.variavel == "e^x"){
             //     continue
             // }
+            if(obj[i] == "+" || obj[i] == "-") continue
             if(obj[i] == null){
                 console.log("INPUT vazio")
             }
             if(obj[i].variavel == null) obj[i].variavel = "x"
+            else if(obj[i].potencia == -1){
+                console.log("INPUT inválido")
+                return
+            }
             else{
-                obj[i].potencia += 1
-                //Falta a implementeção do tipo de coeficiente
-                if(obj[i].coeficiente == null){
-                    obj[i].coeficiente[0] = 1
-                }    
-                    obj[i].coeficiente[2] *= potencia
+                obj[i].potencia = Number(obj[i].potencia) + 1    
+                obj[i].coeficiente *= obj[i].potencia
             }
         }
     }
-    function substituirX(obj,x){
+
+    function substituirX(expressao,x){
+        obj = structuredClone(expressao)
         for(let i =0;i<obj.length;i++){
             if(obj[i] == "+" || obj[i] == "-") continue
             if(obj[i].variavel == null){
@@ -137,4 +142,37 @@ function tombo(obj)
                 obj[i] = obj[i].coeficiente[0]*(obj[i].variavel**obj[i].potencia)
             }
         }
+        let j = 1
+        while(j<obj.length){
+            if(obj[j] == "+"){
+                obj[0] = obj[j-1] + obj[j+1]
+                obj.splice(1,2)
+                continue
+            }
+            if(obj[j] == "-"){
+                obj[0] = obj[j-1] - obj[j+1]
+                obj.splice(1,2)
+                continue
+            }
+        }
+        return obj[0]
+    }
+
+    function bisseccao(inicio,fim,obj){
+        var meio
+        if(substituirX(obj,inicio) * substituirX(obj,fim) >= 0 || inicio >= fim){
+            console.log("Intervalo Invalido")
+            return 
+        }
+        while(Math.abs(fim-inicio) > 0.0001){
+            fInicio = substituirX(obj,inicio)
+            meio = (inicio+fim)/2
+            fMeio = substituirX(obj,meio)
+
+            if(Math.sign(fMeio)  == Math.sign(fInicio)){
+                inicio = meio      
+            }
+            else fim = meio            
+        }
+        return meio
     }
