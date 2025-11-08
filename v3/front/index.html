@@ -7,42 +7,45 @@
     <title>Calc</title>
   </head>
   <body>
+    <div id="menu">
+
+    </div>
+    <div id="container">
     <header>
       <div id="formula"></div>
-      <button id="buttonFormula" class="btocalcular"""">
-        Click
-      </button>
+      <button id="buttonFormula" class="btocalcular">Calcular</button>
     </header>
     <div id="corpo">
       <div class="botoes">
-        <button class="operador" onclick="adicionar('+')">+</button>
-        <button class="operador" onclick="adicionar('-')">-</button>
-        <button class="operador" onclick="adicionar('*')">*</button>
-        <button class="numero" onclick="adicionar('1')">1</button>
-        <button class="numero" onclick="adicionar('2')">2</button>
-        <button class="numero" onclick="adicionar('3')">3</button>
+        <button id="botoes" class="operador" onclick="adicionar('+')">+</button>
+        <button id="botoes" class="operador" onclick="adicionar('-')">-</button>
+        <button id="botoes" class="operador" onclick="adicionar('*')">*</button>
+        <button id="botoes" class="numero" onclick="adicionar('1')">1</button>
+        <button id="botoes" class="numero" onclick="adicionar('2')">2</button>
+        <button id="botoes" class="numero" onclick="adicionar('3')">3</button>
 
-        <button class="operador" onclick="adicionar('√')">√</button>
-        <button class="operador" onclick="adicionar('/')">/</button>
-        <button class="operador" onclick="adicionar('∫')">∫</button>
-        <button class="numero" onclick="adicionar('4')">4</button>
-        <button class="numero" onclick="adicionar('5')">5</button>
-        <button class="numero" onclick="adicionar('6')">6</button>
+        <button id="botoes" class="operador" onclick="adicionar('√')">√</button>
+        <button id="botoes" class="operador" onclick="adicionar('/')">/</button>
+        <button id="botoes" class="operador" onclick="adicionar('∫')">∫</button>
+        <button id="botoes" class="numero" onclick="adicionar('4')">4</button>
+        <button id="botoes" class="numero" onclick="adicionar('5')">5</button>
+        <button id="botoes" class="numero" onclick="adicionar('6')">6</button>
 
-        <button class="operador" onclick="adicionar('Dead')">^</button>
-        <button class="operador" onclick="adicionar('Pc')">Pc</button>
-        <button class="operador" onclick="adicionar('d/dx')">d/dx</button>
-        <button class="numero" onclick="adicionar('7')">7</button>
-        <button class="numero" onclick="adicionar('8')">8</button>
-        <button class="numero" onclick="adicionar('9')">9</button>
+        <button id="botoes" class="operador" onclick="adicionar('Dead')">^</button>
+        <button id="botoes" class="operador" onclick="adicionar('Pc')">Pc</button>
+        <button id="botoes" class="operador" onclick="adicionar('d/dx')">d/dx</button>
+        <button id="botoes" class="numero" onclick="adicionar('7')">7</button>
+        <button id="botoes" class="numero" onclick="adicionar('8')">8</button>
+        <button id="botoes" class="numero" onclick="adicionar('9')">9</button>
 
-        <button class="operador" onclick="adicionar('MIN')">MIN</button>
-        <button class="operador" onclick="adicionar('MAX')">MAX</button>
-        <button class="operador" onclick="adicionar('x')">x</button>
-        <button class="apagar" onclick="apagarTudo()">C</button>
-        <button class="numero" onclick="adicionar('0')">0</button>
-        <button class="apagar" onclick="apagarUltimo()">⌫</button>
+        <button id="botoes" class="operador" onclick="adicionar('MIN')">MIN</button>
+        <button id="botoes" class="operador" onclick="adicionar('MAX')">MAX</button>
+        <button id="botoes" class="operador" onclick="adicionar('x')">x</button>
+        <button id="botoes" class="apagar" onclick="apagarTudo()">C</button>
+        <button id="botoes" class="numero" onclick="adicionar('0')">0</button>
+        <button id="botoes" class="apagar" onclick="apagarUltimo()">⌫</button>
       </div>
+    </div>
     </div>
     <script>
       const sinais = ["+", "-"];
@@ -61,6 +64,12 @@
         "Insert",
         "Backspace",
         "Meta",
+        "ArrowUp",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowDown",
+        "NumLock",
+        "AudioVolumeMute",
       ];
 
       const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -124,11 +133,9 @@
           // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
           // if(testeElemento == undefined){
           // console.log("testeElemento");
-
           // }
           // else{
           // console.log(testeElemento,qtdElementos);
-
           // }
           if (
             qtdElementos == 0 ||
@@ -314,6 +321,7 @@
           let elemento, teste, contador;
           let stringDiv = document.getElementsByClassName("elemento");
           let resposta = [];
+          let formulaBruta = "";
 
           console.log("oi", stringDiv[0]);
 
@@ -333,7 +341,7 @@
             // ).length;
             // console.log(`${tamanhoReal}`);
 
-           let tamanhoReal = teste.length
+            let tamanhoReal = teste.length;
             for (contador; contador < tamanhoReal; contador++) {
               let elmet = teste[contador];
               let valor = teste[contador].textContent;
@@ -341,44 +349,46 @@
               let posBarra;
               let antesBarra;
               let depoisBarra;
-              if(valor != ""){
-                console.log("Aqui ",valor, elmet)
-            
-              if(elmet.className == "divSubPotencia"){
-                potencia = valor
-              }
-              else if(op2.includes(valor) || valor == "(" || valor == ")"){
+              if (valor != "") {
+                console.log("Aqui ", valor, elmet);
+                
+                if (elmet.className == "divSubPotencia") {
+                  formulaBruta += "**";
+                  potencia = valor;
+                } else if (
+                  op2.includes(valor) ||
+                  valor == "(" ||
+                  valor == ")"
+                ) {
                   resposta.push(valor);
-              }
-              else if(!validar(valor)){
-                constante = valor
-              }
+                } else if (!validar(valor)) {
+                  constante = valor;
+                } else if (validar(valor) && !op2.includes(valor)) {
+                  icognita = valor;
+                }
+                  formulaBruta += valor;
 
-              else if(validar(valor) && !op2.includes(valor)){
-                icognita = valor
               }
-              }
-
             }
-
             let obj = {
               constante: constante,
-              icognita:icognita,
-              potencia:potencia
+              icognita: icognita,
+              potencia: potencia,
+            };
+            if (obj.constante !== 1 || letras.includes(obj.icognita)) {
+              resposta.push(obj);
+            } else {
+              // alert("entrou");
             }
-            if(obj.constante !== 1 || letras.includes(obj.icognita)){
-            resposta.push(obj)
-            }
-            else{
-              alert("entrou")
-            }
-        
-              // console.log(obj)
-            console.log(resposta)
+
+            // console.log(obj)
+            // console.log(resposta);
+            
           }
 
           let operacao = [];
           console.log("Resultado: ", resposta);
+          console.log("Formula: ", formulaBruta);
           //  console.log("teste", resposta);
 
           //  const testeEnvio = await envio("/envio/string", "POST", resposta);
