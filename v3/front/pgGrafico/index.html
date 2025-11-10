@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./index.css" />
-    <title>CalcDer</title>
-    <script src="../libs/jsxgraphcore.js"></script>
-    <link rel="stylesheet" href="../libs/jsxgraphcore2.css" />
+    <title>CalcDer:Gráfico</title>
+    <script src="../../libs/jsxgraphcore.js"></script>
+    <link rel="stylesheet" href="../../libs/jsxgraphcore2.css" />
   </head>
   <body>
     <div id="menu">
@@ -26,11 +26,11 @@
       </div>
     </div>
     <div id="corpoMenu">
-      <a href="./index.html" class="link">
+      <a href="../index.html" class="link">
         <button class="btnCorpoMenu">Calculadora</button>
       </a>
 
-      <a href="../front/pgGrafico/index.html" class="link">
+      <a href="../pgGrafico/index.html" class="link">
         <button class="btnCorpoMenu">Gráfico</button>
       </a>
 
@@ -46,81 +46,16 @@
         <button class="btnCorpoMenu">Integrantes</button>
       </a>
     </div>
+    <div id="box"></div>
 
     <div id="container">
       <header>
         <div id="formula"></div>
         <button id="buttonFormula" class="btocalcular">Calcular</button>
       </header>
-      <div id="corpo">
-        <div class="botoes">
-          <button id="botoes" class="operador" onclick="adicionar('+')">
-            +
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('-')">
-            -
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('*')">
-            *
-          </button>
-          <button id="botoes" class="numero" onclick="adicionar('1')">1</button>
-          <button id="botoes" class="numero" onclick="adicionar('2')">2</button>
-          <button id="botoes" class="numero" onclick="adicionar('3')">3</button>
-
-          <button id="botoes" class="operador" onclick="adicionar('√')">
-            √
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('/')">
-            /
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('∫')">
-            ∫
-          </button>
-          <button id="botoes" class="numero" onclick="adicionar('4')">4</button>
-          <button id="botoes" class="numero" onclick="adicionar('5')">5</button>
-          <button id="botoes" class="numero" onclick="adicionar('6')">6</button>
-
-          <button id="botoes" class="operador" onclick="adicionar('Dead')">
-            ^
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('Pc')">
-            Pc
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('`')">
-            '
-          </button>
-          <button id="botoes" class="numero" onclick="adicionar('7')">7</button>
-          <button id="botoes" class="numero" onclick="adicionar('8')">8</button>
-          <button id="botoes" class="numero" onclick="adicionar('9')">9</button>
-
-          <button id="botoes" class="operador" onclick="adicionar('MIN')">
-            MIN
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('MAX')">
-            MAX
-          </button>
-          <button id="botoes" class="operador" onclick="adicionar('x')">
-            x
-          </button>
-          <button id="botoes" class="apagar" onclick="apagarTudo()">C</button>
-          <button id="botoes" class="numero" onclick="adicionar('0')">0</button>
-          <button id="botoes" class="apagar" onclick="apagarUltimo()">⌫</button>
-        </div>
-      </div>
-      <div id="resultadoEquacao">
-        <div id="titulo"></div>
-
-        <div id="resultadoFormula"></div>
-
-        <div id="acoes">
-          <button class="btnAcao">Usar este resultado</button>
-          <button class="btnAcao">Passo a passo</button>
-          <button id="btnGrafico" class="btnAcao">Gráfico</button>
-        </div>
-      </div>
     </div>
     <script>
-  const modo = document.getElementById("modo");
+const modo = document.getElementById("modo");
 const linhas = document.querySelectorAll("hr");
 const btnMenu = document.getElementById("btnMenu");
 const corpoMenu = document.getElementById("corpoMenu");
@@ -141,7 +76,7 @@ modo.addEventListener("change", () => {
   corpoMenu.classList.toggle("dark", escuroAtivo);
   
   localStorage.setItem("modoEscuro", escuroAtivo);
-}); 
+});
 
       btnMenu.addEventListener("click", () => {
         corpoMenu.classList.toggle("fechado");
@@ -228,7 +163,25 @@ modo.addEventListener("change", () => {
         let anterior;
         let atual;
 
+        function graf() {
+          let grafico = document.getElementById("box");
+          grafico.innerHTML = "";
+          // adiciona na página
+
+     
+          const board = JXG.JSXGraph.initBoard("box", {
+            boundingbox: [-10, 10, 10, -10],
+            axis: true,
+          });
+
+          // função normal de JS
+          const f = new Function("x", `return ${formulaBruta}`);
+          board.create("functiongraph", [f, -10, 10]);
+        }
+
         function adicionarElemento(tecla) {
+          // <div id="box"></div>
+
           // let testeElemento = elementoSubDiv[qtdElementos];
           // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
           // if(testeElemento == undefined){
@@ -302,7 +255,7 @@ modo.addEventListener("change", () => {
           if (!termosOcultos.includes(tecla)) {
             //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
             //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
-
+            
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
               (validar(anterior) !== true && validar(atual) == false) ||
@@ -335,7 +288,6 @@ modo.addEventListener("change", () => {
                 divSub.id = `divSub${qtdSubDivs}`;
                 divSub.className = "divSub";
                 classeAtual = "divSub";
-
                 divSubAtual = `divSub${qtdSubDivs}`;
                 qtdSubDivs++;
               }
@@ -434,13 +386,7 @@ modo.addEventListener("change", () => {
             elemento = stringDiv[a];
 
             teste = elemento.getElementsByTagName("div");
-
-            // Filtra elementos vazios na contagem
-            // let tamanhoReal = Array.from(teste).filter(
-            //   (el) => el.textContent.trim() !== ""
-            // ).length;
-            // console.log(`${tamanhoReal}`);
-
+            
             let tamanhoReal = teste.length;
             for (contador; contador < tamanhoReal; contador++) {
               let elmet = teste[contador];
@@ -496,13 +442,22 @@ modo.addEventListener("change", () => {
           let operacao = [];
           console.log("Resultado: ", resposta);
           console.log("Formula: ", formulaBruta);
+
           //  console.log("teste", resposta);
 
           //  const testeEnvio = await envio("/envio/string", "POST", resposta);
+          graf()
         });
-
+          let timer;
+function atualizarGrafico() {
+  clearTimeout(timer);
+  timer = setTimeout(graf, 500);
+}
+atualizarGrafico()
         document.getElementById("btnGrafico").addEventListener("click", () => {
+          alert("aaa");
           // <div id="box"></div>
+          let grafico = document.getElementById("grafico");
           let div = document.createElement("div");
           div.innerHTML = `
           <div id="spam">
@@ -514,7 +469,7 @@ modo.addEventListener("change", () => {
           </div>
           `;
 
-          document.body.appendChild(div); // adiciona na página
+          grafico.appendChild(div); // adiciona na página
 
           const spam = document.getElementById("spam");
           document.getElementById("btnFechar").addEventListener("click", () => {

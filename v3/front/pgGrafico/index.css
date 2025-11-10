@@ -265,10 +265,14 @@ input:checked + .slider:before {
 }
 
 #box {
-  width: 490px;
-  height: 390px;
-  border: 1px solid gray;
+
+  border: 1px solid black;
   margin: auto;
+  background-color: rgb(224, 224, 224);
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #spam {
