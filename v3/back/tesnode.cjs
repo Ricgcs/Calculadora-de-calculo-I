@@ -6,6 +6,7 @@ class Expressoes{
         this.coeficiente = coeficiente
         this.variavel = variavel
         this.potencia = potencia
+        //this.sinal = sinal
     }
 }
 
@@ -19,7 +20,7 @@ console.log("2 - Integral")
 console.log("3 - Substituir o valor de X")
 console.log("4 - Ponto Critico")
 console.log("5 - Bissecção")
-console.log("5 - Derivada 2ºOrdem")
+console.log("6 - Derivada 2ºOrdem")
 console.log("0 - Para sair da calculadora")
 let separacao = expressao.split(" ")
 let operadores = ['+','-']
@@ -29,9 +30,13 @@ for(let i = 0;i<separacao.length;i++){
     }
     if(separacao[i].includes("^")) divs = separacao[i].split(/(x\^)/)
     else divs = separacao[i].split(/(x)/)
-    if(divs[2] == '') divs[2] = "1"
+    if(divs.length == 1) continue
+    if(divs[2] == '') divs[2] = "1/1"
     if(divs[0] == '') divs[0] = "1/1"
+    if(!divs[0].includes("/")) divs[0] = `${divs[0]}/1`
+    if(!divs[2].includes("/")) divs[2] = `${divs[2]}/1`
     divs[0] = divs[0].split(/(\/)/)
+    divs[2] = divs[2].split(/(\/)/)
     separacao[i] = new Expressoes(divs[0],divs[1],divs[2])
 }
 const metodo = prompt("método: ")
@@ -64,61 +69,51 @@ switch(Number(metodo)){
         break
 }
 
-function printExpr(e){
-    for(let i = 0;i<e.length;i++){
-        e[i].coeficiente = n.join("")
-    }
-}
+// function printExpr(e){
+//     for(let i =0;i<e.length;i++){
+//         if(e[i] == "+" || e[i] == "-"){
+//             if(e[i+1] == 0){
+//                 e.splice(i,2) 
+//             }
+//             continue
+//         }
+//         if(e[i].coeficiente[0] != 1 || e[i].coeficiente[2] == 1) e[i].coeficiente.splice(1,2)
+//         if(e[i].potencia[0] == 0) {
+//             e[i].potencia = null
+//             continue
+//         }
+//         if(e[i].potencia[0] != 1 || e[i].potencia[2] == 1) e[i].potencia.splice(1,2)
+//         if(e[i].coeficiente == 1) e[i].coeficiente = null
+//         if(e[i].potencia == 1){
+//             e[i].potencia = null
+//             e[i].variavel = "x"
+//         } 
+//         e[i] = Object.values(e[i]).flat(Infinity).join("")
 
-console.log(separacao)
+//     }
+//     return e.join("")
+// }
+
+console.log(printExpr(separacao))
 
 function tombo(obj)
     {
         for(let i = 0;i<obj.length;i++){
-            // if(obj[i].variavel == "sen(x)"){
-            //     obj[i].variavel = "cos(x)"
-            //     continue
-            // }
-            // if(obj[i].variavel == "cos(x)"){
-            //     obj[i].variavel = "-sen(x)"
-            //     continue
-            // }
-            // if(obj[i].variavel == "ln(x)"){
-            //     obj[i].variavel= "1/x" 
-            //     continue
-            // }
-            // if(obj.variavel == "e^x"){
-            //     continue
-            // }
             if(obj[i] == "+" || obj[i] == "-") continue
             if(obj[i] == null){
             console.log("INPUT vazio")
             }
-            if(obj[i].potencia == 1) obj[i] = obj[i].coeficiente
+            if(obj[i].potencia[0] == 1 && obj[i].potencia[2] == 1) obj[i] = obj[i].coeficiente
             else if(obj[i].variavel == null) obj[i] = 0
             else{
-                    obj[i].coeficiente[0] *= obj[i].potencia
-                    obj[i].potencia -= 1    
+                    obj[i].coeficiente[0] *= obj[i].potencia[0]
+                    obj[i].coeficiente[2] *= obj[i].potencia[2]
+                    obj[i].potencia[0] -= (1*Number(obj[i].potencia[2]))    
             }
         }
-    }''
+    }
     function integralTombo(obj){
         for(let i = 0;i<obj.length;i++){
-            // if(obj[i].variavel == "sen(x)"){
-            //     obj[i].variavel = "-cos(x)"
-            //     continue
-            // }
-            // if(obj[i].variavel == "cos(x)"){
-            //     obj[i].variavel = "sen(x)"
-            //     continue
-            // }
-            // if(obj[i].variavel == "1/x"){
-            //     obj[i].variavel= "ln(x)" 
-            //     continue
-            // }
-            // if(obj.variavel == "e^x"){
-            //     continue
-            // }
             if(obj[i] == "+" || obj[i] == "-") continue
             if(obj[i] == null){
                 console.log("INPUT vazio")
@@ -129,8 +124,9 @@ function tombo(obj)
                 return
             }
             else{
-                obj[i].potencia = Number(obj[i].potencia) + 1    
-                obj[i].coeficiente *= obj[i].potencia
+                obj[i].potencia[0] = Number(obj[i].potencia[0]) + (1*Number(obj[i].potencia[2]))
+                obj[i].coeficiente[2] *= obj[i].potencia[0]
+                obj[i].coeficiente[0] *= obj[i].potencia[2]
             }
         }
     }
@@ -180,4 +176,11 @@ function tombo(obj)
             else fim = meio            
         }
         return Math.floor(meio)
+    }
+
+    function intervalo(obj){
+        let x = -100
+        while(x<100){
+            if(substituirX())
+        }
     }
