@@ -118,7 +118,7 @@ background-color: #232324;
 #formula {
   width: 80%;
   height: 60%;
-  border: black solid 1px;
+  border: black solid 1.9px;
   background-color: rgb(212, 212, 212);
   display: flex;
   align-items: center;
@@ -155,19 +155,25 @@ background-color: #232324;
   display: flex;
   flex-direction: row-reverse;
   height: 15%;
+  width: 100%;
   align-items: center;
+  justify-content: space-between;
+  margin-top: 1vw;
 }
 
 .btnAcao {
   display: flex;
-  height: 50%;
+  height: 100%;
   background-color: green;
   color: white;
-  padding: 2%;
-  font-size: 50%;
-  margin-left: 5%;
+  width: 30%;
+  padding: 1.5%;
+  /* margin-left: 5%; */
   align-items: center;
   justify-content: center;
+  font-size: 1vw;
+  border: 1.9px black  solid;
+
 }
 
 .divSubPotencia {

@@ -111,37 +111,36 @@
         <div id="titulo"></div>
 
         <div id="resultadoFormula"></div>
-
-        <div id="acoes">
-          <button class="btnAcao">Usar este resultado</button>
-          <button class="btnAcao">Passo a passo</button>
-          <button id="btnGrafico" class="btnAcao">Gráfico</button>
-        </div>
+      </div>
+      <div id="acoes">
+        <button class="btnAcao">Usar este resultado</button>
+        <button class="btnAcao">Passo a passo</button>
+        <button id="btnGrafico" class="btnAcao">Gráfico</button>
       </div>
     </div>
     <script>
-  const modo = document.getElementById("modo");
-const linhas = document.querySelectorAll("hr");
-const btnMenu = document.getElementById("btnMenu");
-const corpoMenu = document.getElementById("corpoMenu");
+      const modo = document.getElementById("modo");
+      const linhas = document.querySelectorAll("hr");
+      const btnMenu = document.getElementById("btnMenu");
+      const corpoMenu = document.getElementById("corpoMenu");
 
-// 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
-const temaSalvo = localStorage.getItem("modoEscuro") === "true";
+      // 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
+      const temaSalvo = localStorage.getItem("modoEscuro") === "true";
 
-modo.checked = temaSalvo; // deixa o checkbox correto
-document.body.classList.toggle("dark", temaSalvo);
-linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
-corpoMenu.classList.toggle("dark", temaSalvo);
+      modo.checked = temaSalvo; // deixa o checkbox correto
+      document.body.classList.toggle("dark", temaSalvo);
+      linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
+      corpoMenu.classList.toggle("dark", temaSalvo);
 
-// 🔹 Quando o usuário mudar o modo, salva no localStorage
-modo.addEventListener("change", () => {
-  const escuroAtivo = modo.checked;
-  document.body.classList.toggle("dark", escuroAtivo);
-  linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
-  corpoMenu.classList.toggle("dark", escuroAtivo);
-  
-  localStorage.setItem("modoEscuro", escuroAtivo);
-}); 
+      // 🔹 Quando o usuário mudar o modo, salva no localStorage
+      modo.addEventListener("change", () => {
+        const escuroAtivo = modo.checked;
+        document.body.classList.toggle("dark", escuroAtivo);
+        linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
+        corpoMenu.classList.toggle("dark", escuroAtivo);
+
+        localStorage.setItem("modoEscuro", escuroAtivo);
+      });
 
       btnMenu.addEventListener("click", () => {
         corpoMenu.classList.toggle("fechado");
@@ -175,6 +174,7 @@ modo.addEventListener("change", () => {
       const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
       const letras = [
         "a",
+        "-a",
         "b",
         "c",
         "d",
@@ -200,6 +200,58 @@ modo.addEventListener("change", () => {
         "x",
         "y",
         "z",
+        "+a",
+        "+b",
+        "+c",
+        "+d",
+        "+e",
+        "+f",
+        "+g",
+        "+h",
+        "+i",
+        "+j",
+        "+k",
+        "+l",
+        "+m",
+        "+n",
+        "+o",
+        "+p",
+        "+q",
+        "+r",
+        "+s",
+        "+t",
+        "+u",
+        "+v",
+        "+w",
+        "+x",
+        "+y",
+        "+z",
+        "-a",
+        "-b",
+        "-c",
+        "-d",
+        "-e",
+        "-f",
+        "-g",
+        "-h",
+        "-i",
+        "-j",
+        "-k",
+        "-l",
+        "-m",
+        "-n",
+        "-o",
+        "-p",
+        "-q",
+        "-r",
+        "-s",
+        "-t",
+        "-u",
+        "-v",
+        "-w",
+        "-x",
+        "-y",
+        "-z",
       ];
 
       function validar(val) {
@@ -307,7 +359,9 @@ modo.addEventListener("change", () => {
               (validar(anterior) !== false && validar(atual) == true) ||
               (validar(anterior) !== true && validar(atual) == false) ||
               anterior == "/" ||
-              atual == "/"
+              atual == "/" ||
+              (sinais.includes(ultDig[ultDig.length - 1]) &&
+                ultDig[ultDig.length - 2] == "(")
             ) {
             } else {
               //alert(qtdSubDivs);
@@ -325,7 +379,6 @@ modo.addEventListener("change", () => {
                   divSub.id = `divSub${qtdSubDivs}`;
                   divSub.className = "divSub";
                   classeAtual = "divSub";
-
                   divSubAtual = `divSub${qtdSubDivs}`;
                 }
               } else {
@@ -464,7 +517,7 @@ modo.addEventListener("change", () => {
                   resposta.push(valor);
                 } else if (
                   !validar(valor) ||
-                  validar(teste[contador + 1]?.textContent)
+                  validar(teste[contador + 1]?.textContent || valor.includes("/"))
                 ) {
                   constante = valor;
                   formulaBruta += valor;
@@ -486,7 +539,7 @@ modo.addEventListener("change", () => {
             if (obj.constante !== 1 || letras.includes(obj.icognita)) {
               resposta.push(obj);
             } else {
-              // alert("entrou");
+              console.log("não entrou: " + obj.icognita);
             }
 
             // console.log(obj)
