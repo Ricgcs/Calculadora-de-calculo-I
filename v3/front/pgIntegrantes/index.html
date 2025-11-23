@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./index.css" />
+    <title>CalcDer:Gráfico</title>
+    <script src="../../libs/jsxgraphcore.js"></script>
+    <link rel="stylesheet" href="../../libs/jsxgraphcore2.css" />
+  </head>
+  <body>
+    <div id="menu">
+      <div id="btnMenu">
+        <hr id="linha" />
+        <hr id="linha" />
+        <hr id="linha" />
+      </div>
+      <div>
+        <h1>CalcDer</h1>
+      </div>
+      <div>
+        <label class="switch">
+          <input type="checkbox" id="modo" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="corpoMenu">
+      <a href="../index.html" class="link">
+        <button class="btnCorpoMenu">Calculadora</button>
+      </a>
+
+      <a href="../pgGrafico/index.html" class="link">
+        <button class="btnCorpoMenu">Gráfico</button>
+      </a>
+
+      <a href="" class="link">
+        <button class="btnCorpoMenu">Histórico</button>
+      </a>
+
+      <a href="" class="link">
+        <button class="btnCorpoMenu">Manual</button>
+      </a>
+
+      <a href="" class="link">
+        <button class="btnCorpoMenu">Integrantes</button>
+      </a>
+    </div>
+    <div id="box"></div>
+
+    <div id="container">
+      <header>
+        <div id="formula"></div>
+        <button id="buttonFormula" class="btocalcular">Calcular</button>
+      </header>
+    </div>
+    <script>
+const modo = document.getElementById("modo");
+const linhas = document.querySelectorAll("hr");
+const btnMenu = document.getElementById("btnMenu");
+const corpoMenu = document.getElementById("corpoMenu");
+
+// 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
+const temaSalvo = localStorage.getItem("modoEscuro") === "true";
+
+modo.checked = temaSalvo; // deixa o checkbox correto
+document.body.classList.toggle("dark", temaSalvo);
+linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
+corpoMenu.classList.toggle("dark", temaSalvo);
+
+// 🔹 Quando o usuário mudar o modo, salva no localStorage
+modo.addEventListener("change", () => {
+  const escuroAtivo = modo.checked;
+  document.body.classList.toggle("dark", escuroAtivo);
+  linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
+  corpoMenu.classList.toggle("dark", escuroAtivo);
+  
+  localStorage.setItem("modoEscuro", escuroAtivo);
+});
+
+      btnMenu.addEventListener("click", () => {
+        corpoMenu.classList.toggle("fechado");
+      });
+
+      var formulaBruta = "";
+      const sinais = ["+", "-"];
+      const operadores = ["*"];
+      const op2 = ["+", "-", "*"];
+      const termosOcultos = [
+        "Shift",
+        "Alt",
+        "Control",
+        "CapsLock",
+        "Tab",
+        "ControlAltGraph",
+        "Enter",
+        "Escape",
+        "Dead",
+        "Insert",
+        "Backspace",
+        "Meta",
+        "ArrowUp",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowDown",
+        "NumLock",
+        "AudioVolumeMute",
+      ];
+
+      const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+      const letras = [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+      ];
+
+      function validar(val) {
+        let res = false;
+        if (val != undefined && Number.isNaN(Number(val))) {
+          res = true;
+        }
+        return res;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        let qtdElementos = 0;
+        let qtdSubDivs = 0;
+        const formula = document.getElementById("formula");
+        const corpo = document.getElementById("corpo");
+        let divAtual, classeAtual;
+        let divSubAtual;
+        let ultDig = [];
+        const elementoDiv = [];
+        const elementoSubDiv = [];
+
+        const buttonFormula = document.getElementById("buttonFormula");
+
+        let div;
+        let divSub;
+        let anterior;
+        let atual;
+
+        function graf() {
+          let grafico = document.getElementById("box");
+          grafico.innerHTML = "";
+          // adiciona na página
+
+     
+          const board = JXG.JSXGraph.initBoard("box", {
+            boundingbox: [-10, 10, 10, -10],
+            axis: true,
+          });
+
+          // função normal de JS
+         
+          const f = new Function("x", `return ${formulaBruta}`);
+          board.create("functiongraph", [f, -10, 10]);
+        }
+
+        function adicionarElemento(tecla) {
+          // <div id="box"></div>
+
+          // let testeElemento = elementoSubDiv[qtdElementos];
+          // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
+          // if(testeElemento == undefined){
+          // console.log("testeElemento");
+          // }
+          // else{
+          // console.log(testeElemento,qtdElementos);
+          // }
+          if (
+            qtdElementos == 0 ||
+            tecla == "Enter" ||
+            (anterior == "Backspace" &&
+              (numeros.includes(tecla) || letras.includes(tecla)))
+          ) {
+            div = document.createElement("div");
+            divSub = document.createElement("div");
+            div.id = `div${qtdElementos}`;
+            div.className = "elemento";
+            classeAtual = "elemento";
+
+            formula.appendChild(div);
+            divAtual = `div${qtdElementos}`;
+            divSub.id = `divSub${qtdSubDivs}`;
+            divSub.className = "divSub";
+            classeAtual = "divSub";
+            divSubAtual = `divSub${qtdSubDivs}`;
+            div.appendChild(divSub);
+
+            qtdSubDivs++;
+            qtdElementos++;
+            teste = div.querySelectorAll("div");
+            elementoDiv.push(div);
+            elementoSubDiv.push(divSub);
+          }
+
+          anterior = ultDig[ultDig.length - 1];
+          atual = tecla;
+
+          if (
+            anterior == "(" ||
+            atual == "(" ||
+            atual == ")" ||
+            anterior == ")" ||
+            (operadores.includes(anterior) &&
+              classeAtual != "divSubPotencia" &&
+              anterior == "(") ||
+            (sinais.includes(atual) && anterior != "(") ||
+            (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(") ||
+            operadores.includes(atual) ||
+            operadores.includes(anterior)
+          ) {
+            div = document.createElement("div");
+            divSub = document.createElement("div");
+            div.id = `div${qtdElementos}`;
+            div.className = "elemento";
+            classeAtual = "elemento";
+            formula.appendChild(div);
+            divAtual = `div${qtdElementos}`;
+            divSub.id = `divSub${qtdSubDivs}`;
+            divSub.className = "divSub";
+            classeAtual = "divSub";
+            divSubAtual = `divSub${qtdSubDivs}`;
+            div.appendChild(divSub);
+
+            qtdSubDivs++;
+            qtdElementos++;
+            elementoDiv.push(div);
+            elementoSubDiv.push(divSub);
+          }
+
+          if (!termosOcultos.includes(tecla)) {
+            //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
+            //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
+            
+            if (
+              (validar(anterior) !== false && validar(atual) == true) ||
+              (validar(anterior) !== true && validar(atual) == false) ||
+              anterior == "/" ||
+              atual == "/"
+            ) {
+            } else {
+              //alert(qtdSubDivs);
+              // alert(classeAtual)
+              if (classeAtual == "divSubPotencia") {
+                // alert("entrar")
+                if (
+                  (validar(anterior) !== false && validar(atual) == true) ||
+                  (validar(anterior) !== true && validar(atual) == false)
+                ) {
+                  // alert("entrou")
+                  divSub = document.createElement("div");
+                  divSub.appendChild(divSub);
+                  // alert(qtdSubDivs)
+                  divSub.id = `divSub${qtdSubDivs}`;
+                  divSub.className = "divSub";
+                  classeAtual = "divSub";
+
+                  divSubAtual = `divSub${qtdSubDivs}`;
+                }
+              } else {
+                divSub = document.createElement("div");
+                div.appendChild(divSub);
+                // alert(qtdSubDivs)
+                divSub.id = `divSub${qtdSubDivs}`;
+                divSub.className = "divSub";
+                classeAtual = "divSub";
+                divSubAtual = `divSub${qtdSubDivs}`;
+                qtdSubDivs++;
+              }
+            }
+            divSub.innerText += tecla;
+            ultDig.push(tecla);
+            elementoSubDiv.push(divSub);
+          } //termos ocultos
+          else {
+            if (tecla == "Backspace") {
+              deletarUltimo();
+              elementoDiv.pop();
+            }
+            if (tecla == "Dead") {
+              divSub = document.createElement("div");
+              div.appendChild(divSub);
+              // alert(qtdSubDivs);
+              divSub.id = `divSub${qtdSubDivs}`;
+              divSub.className = "divSubPotencia";
+              classeAtual = "divSubPotencia";
+              divSubAtual = `divSub${qtdSubDivs}`;
+              qtdSubDivs++;
+            }
+          }
+        }
+
+        function deletarUltimo() {
+          //const ultimo = elementos.pop();
+          if (qtdElementos != 0) {
+            let ultimo = formula.lastChild;
+            formula.removeChild(ultimo);
+            divAtual = elementoDiv[elementoDiv.length - 1];
+            elementoDiv.pop();
+            // alert(elementoDiv.length);
+            // console.log(elementoDiv[elementoDiv.length - 1]);
+            anterior = "Backspace";
+            qtdElementos--;
+          }
+        }
+        let a = 0;
+        document.addEventListener("keydown", (tecla) => {
+          adicionarElemento(tecla.key);
+        });
+
+        async function envio(rota, metodo, dado) {
+          try {
+            const envio = await fetch(`http://localhost:3000${rota}`, {
+              method: metodo,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(dado),
+            });
+            let envio2 = envio.json();
+            return envio2;
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        window.adicionar = function (valor) {
+          adicionarElemento(valor);
+        };
+
+        // Função para apagar tudo (C)
+        function limparTudo() {
+          document.getElementById("calc").value = "";
+          document.getElementById("passo-a-passo").textContent = "";
+          document.getElementById("valor-x").value = "";
+        }
+
+        // Função para apagar o último caractere (⌫)
+        window.apagarUltimo = function () {
+          deletarUltimo();
+        };
+
+        window.apagarTudo = function () {
+          formula.innerHTML = "";
+          qtdElementos = 0;
+        };
+
+        buttonFormula.addEventListener("click", async () => {
+          let elemento, teste, contador;
+          let stringDiv = document.getElementsByClassName("elemento");
+          let resposta = [];
+          formulaBruta = "";
+
+          console.log("oi", stringDiv[0]);
+
+          for (let a = 0; a < stringDiv.length; a++) {
+            let constante = 1;
+            let icognita = null;
+            let potencia = 1;
+            let sinal = "+";
+            contador = 0;
+            elemento = stringDiv[a];
+
+            teste = elemento.getElementsByTagName("div");
+            
+            let tamanhoReal = teste.length;
+            for (contador; contador < tamanhoReal; contador++) {
+              let elmet = teste[contador];
+              let valor = teste[contador].textContent;
+              let tamanho = tamanhoReal; // usa o tamanho sem elementos vazios
+              let posBarra;
+              let antesBarra;
+              let depoisBarra;
+              if (valor != "") {
+                console.log("Aqui ", valor, elmet);
+
+                if (elmet.className == "divSubPotencia") {
+                  formulaBruta += "**";
+                  potencia = valor;
+                } else if (
+                  op2.includes(valor) ||
+                  valor == "(" ||
+                  valor == ")"
+                ) {
+                  formulaBruta += valor;
+                  resposta.push(valor);
+                } else if (
+                  !validar(valor) ||
+                  validar(teste[contador + 1]?.textContent)
+                ) {
+                  constante = valor;
+                  formulaBruta += valor;
+
+                  if (contador != tamanhoReal - 1) {
+                    formulaBruta += "*";
+                  }
+                } else if (validar(valor) && !op2.includes(valor)) {
+                  icognita = valor;
+                  formulaBruta += valor;
+                }
+              }
+            }
+            let obj = {
+              constante: constante,
+              icognita: icognita,
+              potencia: potencia,
+            };
+            if (obj.constante !== 1 || letras.includes(obj.icognita)) {
+              resposta.push(obj);
+            } else {
+              // alert("entrou");
+            }
+
+            // console.log(obj)
+            // console.log(resposta);
+          }
+
+          let operacao = [];
+          console.log("Resultado: ", resposta);
+          console.log("Formula: ", formulaBruta);
+
+          //  console.log("teste", resposta);
+
+          //  const testeEnvio = await envio("/envio/string", "POST", resposta);
+          graf()
+        });
+          let timer;
+function atualizarGrafico() {
+  clearTimeout(timer);
+  timer = setTimeout(graf, 500);
+}
+atualizarGrafico()
+        document.getElementById("btnGrafico").addEventListener("click", () => {
+          alert("aaa");
+          // <div id="box"></div>
+          let grafico = document.getElementById("grafico");
+          let div = document.createElement("div");
+          div.innerHTML = `
+          <div id="spam">
+           <div id="divGraf">
+            <h3>Gráfico f(x) = ${formulaBruta}</h3>
+            <button id="btnFechar">x</button>
+           </div>
+           <div id="box"></div> 
+          </div>
+          `;
+
+          grafico.appendChild(div); // adiciona na página
+
+          const spam = document.getElementById("spam");
+          document.getElementById("btnFechar").addEventListener("click", () => {
+            document.body.removeChild(document.body.lastElementChild);
+          });
+
+          const board = JXG.JSXGraph.initBoard("box", {
+            boundingbox: [-10, 10, 10, -10],
+            axis: true,
+          });
+
+          // função normal de JS
+          const f = new Function("x", `return ${formulaBruta}`);
+          board.create("functiongraph", [f, -10, 10]);
+        });
+      });
+    </script>
+  </body>
+</html>

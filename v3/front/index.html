@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="./index.css" />
     <title>CalcDer</title>
     <script src="../libs/jsxgraphcore.js"></script>
+
     <link rel="stylesheet" href="../libs/jsxgraphcore2.css" />
   </head>
   <body>
@@ -118,497 +119,560 @@
         <button id="btnGrafico" class="btnAcao">Gráfico</button>
       </div>
     </div>
-    <script>
-      const modo = document.getElementById("modo");
-      const linhas = document.querySelectorAll("hr");
-      const btnMenu = document.getElementById("btnMenu");
-      const corpoMenu = document.getElementById("corpoMenu");
 
-      // 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
-      const temaSalvo = localStorage.getItem("modoEscuro") === "true";
+    <!-- <script src="../front/index.js"></script> -->
 
-      modo.checked = temaSalvo; // deixa o checkbox correto
-      document.body.classList.toggle("dark", temaSalvo);
-      linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
-      corpoMenu.classList.toggle("dark", temaSalvo);
+    <script type="module">
+            import { tombo } from "../front/index.js";
 
-      // 🔹 Quando o usuário mudar o modo, salva no localStorage
-      modo.addEventListener("change", () => {
-        const escuroAtivo = modo.checked;
-        document.body.classList.toggle("dark", escuroAtivo);
-        linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
-        corpoMenu.classList.toggle("dark", escuroAtivo);
+            const modo = document.getElementById("modo");
+            const linhas = document.querySelectorAll("hr");
+            const btnMenu = document.getElementById("btnMenu");
+            const corpoMenu = document.getElementById("corpoMenu");
 
-        localStorage.setItem("modoEscuro", escuroAtivo);
-      });
+            // 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
+            const temaSalvo = localStorage.getItem("modoEscuro") === "true";
 
-      btnMenu.addEventListener("click", () => {
-        corpoMenu.classList.toggle("fechado");
-      });
+            modo.checked = temaSalvo; // deixa o checkbox correto
+            document.body.classList.toggle("dark", temaSalvo);
+            linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
+            corpoMenu.classList.toggle("dark", temaSalvo);
 
-      var formulaBruta = "";
-      const sinais = ["+", "-"];
-      const operadores = ["*"];
-      const op2 = ["+", "-", "*"];
-      const pula = ["MINMAX","Bs","Pc","∫","´"]
-      const termosOcultos = [
-        "Shift",
-        "Alt",
-        "Control",
-        "CapsLock",
-        "Tab",
-        "ControlAltGraph",
-        "Enter",
-        "Escape",
-        "Dead",
-        "Insert",
-        "Backspace",
-        "Meta",
-        "ArrowUp",
-        "ArrowRight",
-        "ArrowLeft",
-        "ArrowDown",
-        "NumLock",
-        "AudioVolumeMute",
-      ];
+            // 🔹 Quando o usuário mudar o modo, salva no localStorage
+            modo.addEventListener("change", () => {
+              const escuroAtivo = modo.checked;
+              document.body.classList.toggle("dark", escuroAtivo);
+              linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
+              corpoMenu.classList.toggle("dark", escuroAtivo);
 
-      const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-      const letras = [
-        "a",
-        "-a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-        "+a",
-        "+b",
-        "+c",
-        "+d",
-        "+e",
-        "+f",
-        "+g",
-        "+h",
-        "+i",
-        "+j",
-        "+k",
-        "+l",
-        "+m",
-        "+n",
-        "+o",
-        "+p",
-        "+q",
-        "+r",
-        "+s",
-        "+t",
-        "+u",
-        "+v",
-        "+w",
-        "+x",
-        "+y",
-        "+z",
-        "-a",
-        "-b",
-        "-c",
-        "-d",
-        "-e",
-        "-f",
-        "-g",
-        "-h",
-        "-i",
-        "-j",
-        "-k",
-        "-l",
-        "-m",
-        "-n",
-        "-o",
-        "-p",
-        "-q",
-        "-r",
-        "-s",
-        "-t",
-        "-u",
-        "-v",
-        "-w",
-        "-x",
-        "-y",
-        "-z",
-      ];
+              localStorage.setItem("modoEscuro", escuroAtivo);
+            });
 
-      function validar(val) {
-        let res = false;
-        if (val != undefined && Number.isNaN(Number(val))) {
-          res = true;
-        }
-        return res;
-      }
+            btnMenu.addEventListener("click", () => {
+              corpoMenu.classList.toggle("fechado");
+            });
+            var teste;
+            var formulaBruta = "";
+            const sinais = ["+", "-"];
+            const operadores = ["*"];
+            const op2 = ["+", "-", "*"];
+            const pula = ["MINMAX", "Bs", "Pc", "∫", "´"];
+            const termosOcultos = [
+              "Shift",
+              "Alt",
+              "Control",
+              "CapsLock",
+              "Tab",
+              "ControlAltGraph",
+              "Enter",
+              "Escape",
+              "Dead",
+              "Insert",
+              "Backspace",
+              "Meta",
+              "ArrowUp",
+              "ArrowRight",
+              "ArrowLeft",
+              "ArrowDown",
+              "NumLock",
+              "AudioVolumeMute",
+            ];
 
-      document.addEventListener("DOMContentLoaded", () => {
-        let qtdElementos = 0;
-        let qtdSubDivs = 0;
-        const formula = document.getElementById("formula");
-        const corpo = document.getElementById("corpo");
-        let divAtual, classeAtual;
-        let divSubAtual;
-        let ultDig = [];
-        const elementoDiv = [];
-        const elementoSubDiv = [];
+            const numeros = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+            const letras = [
+              "a",
+              "-a",
+              "b",
+              "c",
+              "d",
+              "e",
+              "f",
+              "g",
+              "h",
+              "i",
+              "j",
+              "k",
+              "l",
+              "m",
+              "n",
+              "o",
+              "p",
+              "q",
+              "r",
+              "s",
+              "t",
+              "u",
+              "v",
+              "w",
+              "x",
+              "y",
+              "z",
+              "+a",
+              "+b",
+              "+c",
+              "+d",
+              "+e",
+              "+f",
+              "+g",
+              "+h",
+              "+i",
+              "+j",
+              "+k",
+              "+l",
+              "+m",
+              "+n",
+              "+o",
+              "+p",
+              "+q",
+              "+r",
+              "+s",
+              "+t",
+              "+u",
+              "+v",
+              "+w",
+              "+x",
+              "+y",
+              "+z",
+              "-a",
+              "-b",
+              "-c",
+              "-d",
+              "-e",
+              "-f",
+              "-g",
+              "-h",
+              "-i",
+              "-j",
+              "-k",
+              "-l",
+              "-m",
+              "-n",
+              "-o",
+              "-p",
+              "-q",
+              "-r",
+              "-s",
+              "-t",
+              "-u",
+              "-v",
+              "-w",
+              "-x",
+              "-y",
+              "-z",
+            ];
 
-        const buttonFormula = document.getElementById("buttonFormula");
+            function validar(val) {
+              let res = false;
+              if (val != undefined && Number.isNaN(Number(val))) {
+                res = true;
+              }
+              return res;
+            }
 
-        let div;
-        let divSub;
-        let anterior;
-        let atual;
+            document.addEventListener("DOMContentLoaded", () => {
+              let qtdElementos = 0;
+              let qtdSubDivs = 0;
+              const formula = document.getElementById("formula");
+              const corpo = document.getElementById("corpo");
+              let divAtual, classeAtual;
+              let divSubAtual;
+              let ultDig = [];
+              const elementoDiv = [];
+              const elementoSubDiv = [];
 
-        function adicionarElemento(tecla) {
-          // let testeElemento = elementoSubDiv[qtdElementos];
-          // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
-          // if(testeElemento == undefined){
-          // console.log("testeElemento");
-          // }
-          // else{
-          // console.log(testeElemento,qtdElementos);
-          // }
-          if (
-            qtdElementos == 0 ||
-            tecla == "Enter" ||
-            (anterior == "Backspace" &&
-              (numeros.includes(tecla) || letras.includes(tecla)))||
-            pula.includes(tecla)
-          ) {
-            div = document.createElement("div");
-            divSub = document.createElement("div");
-            div.id = `div${qtdElementos}`;
-            div.className = "elemento";
-            classeAtual = "elemento";
+              const buttonFormula = document.getElementById("buttonFormula");
 
-            formula.appendChild(div);
-            divAtual = `div${qtdElementos}`;
-            divSub.id = `divSub${qtdSubDivs}`;
-            divSub.className = "divSub";
-            classeAtual = "divSub";
-            divSubAtual = `divSub${qtdSubDivs}`;
-            div.appendChild(divSub);
+              let div;
+              let divSub;
+              let anterior;
+              let atual;
 
-            qtdSubDivs++;
-            qtdElementos++;
-            teste = div.querySelectorAll("div");
-            elementoDiv.push(div);
-            elementoSubDiv.push(divSub);
-          }
-
-          anterior = ultDig[ultDig.length - 1];
-          atual = tecla;
-
-          if (
-            anterior == "(" ||
-            atual == "(" ||
-            atual == ")" ||
-            anterior == ")" ||
-            (operadores.includes(anterior) &&
-              classeAtual != "divSubPotencia" &&
-              anterior == "(") ||
-            (sinais.includes(atual) && anterior != "(") ||
-            (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(") ||
-            operadores.includes(atual) ||
-            operadores.includes(anterior)||
-            pula.includes(anterior)
-          ) {
-            div = document.createElement("div");
-            divSub = document.createElement("div");
-            div.id = `div${qtdElementos}`;
-            div.className = "elemento";
-            classeAtual = "elemento";
-            formula.appendChild(div);
-            divAtual = `div${qtdElementos}`;
-            divSub.id = `divSub${qtdSubDivs}`;
-            divSub.className = "divSub";
-            classeAtual = "divSub";
-            divSubAtual = `divSub${qtdSubDivs}`;
-            div.appendChild(divSub);
-
-            qtdSubDivs++;
-            qtdElementos++;
-            elementoDiv.push(div);
-            elementoSubDiv.push(divSub);
-          }
-
-          if (!termosOcultos.includes(tecla)) {
-            //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
-            //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
-
-            if (
-              (validar(anterior) !== false && validar(atual) == true) ||
-              (validar(anterior) !== true && validar(atual) == false) ||
-              anterior == "/" ||
-              atual == "/" ||
-              (sinais.includes(ultDig[ultDig.length - 1]) &&
-                ultDig[ultDig.length - 2] == "(")
-            ) {
-            } else {
-              //alert(qtdSubDivs);
-              // alert(classeAtual)
-              if (classeAtual == "divSubPotencia") {
-                // alert("entrar")
+              function adicionarElemento(tecla) {
+                // let testeElemento = elementoSubDiv[qtdElementos];
+                // // let testeElemento = elementoSubDiv[(elementoSubDiv.length)-1];
+                // if(testeElemento == undefined){
+                // console.log("testeElemento");
+                // }
+                // else{
+                // console.log(testeElemento,qtdElementos);
+                // }
                 if (
-                  (validar(anterior) !== false && validar(atual) == true) ||
-                  (validar(anterior) !== true && validar(atual) == false)
+                  qtdElementos == 0 ||
+                  tecla == "Enter" ||
+                  (anterior == "Backspace" &&
+                    (numeros.includes(tecla) || letras.includes(tecla))) ||
+                  pula.includes(tecla)
                 ) {
-                  // alert("entrou")
+                  div = document.createElement("div");
                   divSub = document.createElement("div");
-                  divSub.appendChild(divSub);
-                  // alert(qtdSubDivs)
+                  div.id = `div${qtdElementos}`;
+                  div.className = "elemento";
+                  classeAtual = "elemento";
+
+                  formula.appendChild(div);
+                  divAtual = `div${qtdElementos}`;
                   divSub.id = `divSub${qtdSubDivs}`;
                   divSub.className = "divSub";
                   classeAtual = "divSub";
                   divSubAtual = `divSub${qtdSubDivs}`;
+                  div.appendChild(divSub);
+
+                  qtdSubDivs++;
+                  qtdElementos++;
+                  teste = div.querySelectorAll("div");
+                  elementoDiv.push(div);
+                  elementoSubDiv.push(divSub);
                 }
-              } else {
-                divSub = document.createElement("div");
-                div.appendChild(divSub);
-                // alert(qtdSubDivs)
-                divSub.id = `divSub${qtdSubDivs}`;
-                divSub.className = "divSub";
-                classeAtual = "divSub";
 
-                divSubAtual = `divSub${qtdSubDivs}`;
-                qtdSubDivs++;
-              }
-            }
-            divSub.innerText += tecla;
-            ultDig.push(tecla);
-            elementoSubDiv.push(divSub);
-          } //termos ocultos
-          else {
-            if (tecla == "Backspace") {
-              deletarUltimo();
-              elementoDiv.pop();
-            }
-            if (tecla == "Dead") {
-              divSub = document.createElement("div");
-              div.appendChild(divSub);
-              // alert(qtdSubDivs);
-              divSub.id = `divSub${qtdSubDivs}`;
-              divSub.className = "divSubPotencia";
-              classeAtual = "divSubPotencia";
-              divSubAtual = `divSub${qtdSubDivs}`;
-              qtdSubDivs++;
-            }
-          }
-        }
+                anterior = ultDig[ultDig.length - 1];
+                atual = tecla;
 
-        function deletarUltimo() {
-          //const ultimo = elementos.pop();
-          if (qtdElementos != 0) {
-            let ultimo = formula.lastChild;
-            formula.removeChild(ultimo);
-            divAtual = elementoDiv[elementoDiv.length - 1];
-            elementoDiv.pop();
-            // alert(elementoDiv.length);
-            // console.log(elementoDiv[elementoDiv.length - 1]);
-            anterior = "Backspace";
-            qtdElementos--;
-          }
-        }
-        let a = 0;
-        document.addEventListener("keydown", (tecla) => {
-          adicionarElemento(tecla.key);
-        });
-
-        async function envio(rota, metodo, dado) {
-          try {
-            const envio = await fetch(`http://localhost:3000${rota}`, {
-              method: metodo,
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(dado),
-            });
-            let envio2 = envio.json();
-            return envio2;
-          } catch (error) {
-            console.log(error);
-          }
-        }
-
-        window.adicionar = function (valor) {
-          adicionarElemento(valor);
-        };
-
-        // Função para apagar tudo (C)
-        function limparTudo() {
-          document.getElementById("calc").value = "";
-          document.getElementById("passo-a-passo").textContent = "";
-          document.getElementById("valor-x").value = "";
-        }
-
-        // Função para apagar o último caractere (⌫)
-        window.apagarUltimo = function () {
-          deletarUltimo();
-        };
-
-        window.apagarTudo = function () {
-          formula.innerHTML = "";
-          qtdElementos = 0;
-        };
-
-        buttonFormula.addEventListener("click", async () => {
-          let elemento, teste, contador;
-          let stringDiv = document.getElementsByClassName("elemento");
-          let resposta = [];
-          formulaBruta = "";
-
-          console.log("oi", stringDiv[0]);
-
-          for (let a = 0; a < stringDiv.length; a++) {
-            let constante = 1;
-            let icognita = null;
-            let potencia = 1;
-            let sinal = "+";
-            contador = 0;
-            elemento = stringDiv[a];
-
-            teste = elemento.getElementsByTagName("div");
-
-            // Filtra elementos vazios na contagem
-            // let tamanhoReal = Array.from(teste).filter(
-            //   (el) => el.textContent.trim() !== ""
-            // ).length;
-            // console.log(`${tamanhoReal}`);
-
-            let tamanhoReal = teste.length;
-            for (contador; contador < tamanhoReal; contador++) {
-              let elmet = teste[contador];
-              let valor = teste[contador].textContent;
-              let tamanho = tamanhoReal; 
-              let posBarra;
-              let antesBarra;
-              let depoisBarra;
-              var conta = "normal";
-              
-              if (valor != "") {
-                console.log("Aqui ", valor, elmet);
-
-                if (elmet.className == "divSubPotencia") {
-                  formulaBruta += "**";
-                  potencia = valor;
-                } else if (
-                  op2.includes(valor) ||
-                  valor == "(" ||
-                  valor == ")"
+                if (
+                  anterior == "(" ||
+                  atual == "(" ||
+                  atual == ")" ||
+                  anterior == ")" ||
+                  (operadores.includes(anterior) &&
+                    classeAtual != "divSubPotencia" &&
+                    anterior == "(") ||
+                  (sinais.includes(atual) && anterior != "(") ||
+                  (sinais.includes(anterior) && ultDig[ultDig.length - 2] != "(") ||
+                  operadores.includes(atual) ||
+                  operadores.includes(anterior) ||
+                  pula.includes(anterior)
                 ) {
-                  formulaBruta += valor;
-                  resposta.push(valor);
-                } else if (
-                  !validar(valor) ||
-                  validar(teste[contador + 1]?.textContent || valor.includes("/"))
-                ) {
-                  constante = valor;
-                  formulaBruta += valor;
+                  div = document.createElement("div");
+                  divSub = document.createElement("div");
+                  div.id = `div${qtdElementos}`;
+                  div.className = "elemento";
+                  classeAtual = "elemento";
+                  formula.appendChild(div);
+                  divAtual = `div${qtdElementos}`;
+                  divSub.id = `divSub${qtdSubDivs}`;
+                  divSub.className = "divSub";
+                  classeAtual = "divSub";
+                  divSubAtual = `divSub${qtdSubDivs}`;
+                  div.appendChild(divSub);
 
-                  if (contador != tamanhoReal - 1) {
-                    formulaBruta += "*";
+                  qtdSubDivs++;
+                  qtdElementos++;
+                  elementoDiv.push(div);
+                  elementoSubDiv.push(divSub);
+                }
+
+                if (!termosOcultos.includes(tecla)) {
+                  //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
+                  //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
+
+                  if (
+                    (validar(anterior) !== false && validar(atual) == true) ||
+                    (validar(anterior) !== true && validar(atual) == false) ||
+                    anterior == "/" ||
+                    atual == "/" ||
+                    (sinais.includes(ultDig[ultDig.length - 1]) &&
+                      ultDig[ultDig.length - 2] == "(")
+                  ) {
+                  } else {
+                    //alert(qtdSubDivs);
+                    // alert(classeAtual)
+                    if (classeAtual == "divSubPotencia") {
+                      // alert("entrar")
+                      if (
+                        (validar(anterior) !== false && validar(atual) == true) ||
+                        (validar(anterior) !== true && validar(atual) == false)
+                      ) {
+                        // alert("entrou")
+                        divSub = document.createElement("div");
+                        divSub.appendChild(divSub);
+                        // alert(qtdSubDivs)
+                        divSub.id = `divSub${qtdSubDivs}`;
+                        divSub.className = "divSub";
+                        classeAtual = "divSub";
+                        divSubAtual = `divSub${qtdSubDivs}`;
+                      }
+                    } else {
+                      divSub = document.createElement("div");
+                      div.appendChild(divSub);
+                      // alert(qtdSubDivs)
+                      divSub.id = `divSub${qtdSubDivs}`;
+                      divSub.className = "divSub";
+                      classeAtual = "divSub";
+
+                      divSubAtual = `divSub${qtdSubDivs}`;
+                      qtdSubDivs++;
+                    }
                   }
-                } else if (validar(valor) && !op2.includes(valor)) {
-                  icognita = valor;
-                  formulaBruta += valor;
+                  divSub.innerText += tecla;
+                  ultDig.push(tecla);
+                  elementoSubDiv.push(divSub);
+                } //termos ocultos
+                else {
+                  if (tecla == "Backspace") {
+                    deletarUltimo();
+                    elementoDiv.pop();
+                  }
+                  if (tecla == "Dead") {
+                    divSub = document.createElement("div");
+                    div.appendChild(divSub);
+                    // alert(qtdSubDivs);
+                    divSub.id = `divSub${qtdSubDivs}`;
+                    divSub.className = "divSubPotencia";
+                    classeAtual = "divSubPotencia";
+                    divSubAtual = `divSub${qtdSubDivs}`;
+                    qtdSubDivs++;
+                  }
                 }
               }
-            }
-            let obj = {
-              constante: constante,
-              icognita: icognita,
-              potencia: potencia,
-            };
-            if (obj.constante !== 1 || letras.includes(obj.icognita)) {
-              resposta.push(obj);
-            } else {
-              console.log("não entrou: " + obj.icognita);
-              if(obj.icognita == "∫"){
-                conta = "integral"
+
+              function deletarUltimo() {
+                //const ultimo = elementos.pop();
+                if (qtdElementos != 0) {
+                  let ultimo = formula.lastChild;
+                  formula.removeChild(ultimo);
+                  divAtual = elementoDiv[elementoDiv.length - 1];
+                  elementoDiv.pop();
+                  // alert(elementoDiv.length);
+                  // console.log(elementoDiv[elementoDiv.length - 1]);
+                  anterior = "Backspace";
+                  qtdElementos--;
+                }
               }
-              else if(obj.icognita == "´"){
-                conta = "derivada"
+              let a = 0;
+              document.addEventListener("keydown", (tecla) => {
+                adicionarElemento(tecla.key);
+              });
 
+              async function envio(rota, metodo, dado) {
+                try {
+                  const envio = await fetch(`http://localhost:3000${rota}`, {
+                    method: metodo,
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(dado),
+                  });
+                  let envio2 = envio.json();
+                  return envio2;
+                } catch (error) {
+                  console.log(error);
+                }
               }
-              else if(obj.icognita == "MINMAX"){
-                conta = "MinMax"
+
+              window.adicionar = function (valor) {
+                adicionarElemento(valor);
+              };
+
+              // Função para apagar tudo (C)
+              function limparTudo() {
+                document.getElementById("calc").value = "";
+                document.getElementById("passo-a-passo").textContent = "";
+                document.getElementById("valor-x").value = "";
               }
-              else if(obj.icognita == "Bs"){
-                conta = "Bs"
-              }
-              else if(obj.icognita == "Pc"){
-                conta = "Pc"
-              }
-              else{
-                conta = "normal"
-              }
-            }
 
-            // console.log(obj)
-            // console.log(resposta);
-          }
+              // Função para apagar o último caractere (⌫)
+              window.apagarUltimo = function () {
+                deletarUltimo();
+              };
 
-          let operacao = [];
-          console.log("Operacao: ", conta);
-          console.log("Resultado: ", resposta);
-          console.log("Formula: ", formulaBruta);
-          //  console.log("teste", resposta);
+              window.apagarTudo = function () {
+                formula.innerHTML = "";
+                qtdElementos = 0;
+              };
 
-          //  const testeEnvio = await envio("/envio/string", "POST", resposta);
-        });
+              buttonFormula.addEventListener("click", async () => {
+                let elemento, contador;
+                teste = null;
+                let stringDiv = document.getElementsByClassName("elemento");
+                let resposta = [];
+                formulaBruta = "";
 
-        document.getElementById("btnGrafico").addEventListener("click", () => {
-          // <div id="box"></div>
-          let div = document.createElement("div");
-          div.innerHTML = `
-          <div id="spam">
-           <div id="divGraf">
-            <h3>Gráfico f(x) = ${formulaBruta}</h3>
-            <button id="btnFechar">x</button>
-           </div>
-           <div id="box"></div> 
-          </div>
-          `;
+                console.log("oi", stringDiv[0]);
 
-          document.body.appendChild(div); // adiciona na página
+                for (let a = 0; a < stringDiv.length; a++) {
+                  let coeficiente = 1;
+                  let variavel = null;
+                  let potencia = "1";
+                  let sinal = "+";
+                  contador = 0;
+                  elemento = stringDiv[a];
 
-          const spam = document.getElementById("spam");
-          document.getElementById("btnFechar").addEventListener("click", () => {
-            document.body.removeChild(document.body.lastElementChild);
-          });
+                  teste = elemento.getElementsByTagName("div");
 
-          const board = JXG.JSXGraph.initBoard("box", {
-            boundingbox: [-10, 10, 10, -10],
-            axis: true,
-          });
+                  // Filtra elementos vazios na contagem
+                  // let tamanhoReal = Array.from(teste).filter(
+                  //   (el) => el.textContent.trim() !== ""
+                  // ).length;
+                  // console.log(`${tamanhoReal}`);
 
-          // função normal de JS
-          const f = new Function("x", `return ${formulaBruta}`);
-          board.create("functiongraph", [f, -10, 10]);
-        });
-      });
+                  let tamanhoReal = teste.length;
+                  var conta;
+                    let posBarra;
+                    let barra;
+                    let depoisBarra;
+
+                  for (contador; contador < tamanhoReal; contador++) {
+                    let elmet = teste[contador];
+                    let valor = teste[contador].textContent;
+                    let tamanho = tamanhoReal;
+
+                    if (valor != "") {
+                      console.log("Aqui ", valor, elmet);
+
+                      if (elmet.className == "divSubPotencia") {
+                        formulaBruta += "**";
+                        formulaBruta += valor;
+                        potencia = valor;
+                      } else if (
+                        op2.includes(valor) ||
+                        valor == "(" ||
+                        valor == ")"
+                      ) {
+                        formulaBruta += valor;
+                        resposta.push(valor);
+                      } else if (
+                        validar(valor) &&
+                        !op2.includes(valor) &&
+                        !valor.includes("/")
+                      ) {
+                        variavel = valor;
+                        formulaBruta += valor;
+                      } else if (
+                        !validar(valor) ||
+                        validar(teste[contador + 1]?.textContent) ||
+                        valor.includes("/")
+                      ) {
+                        coeficiente = `${valor}`;
+                        formulaBruta += valor;
+
+                        if (contador != tamanhoReal - 1) {
+                          formulaBruta += "*";
+                        }
+                      }
+                    }
+                  }
+
+                  let reserva, reserva2, pos, tam;
+                  try {
+  reserva = coeficiente;
+  reserva2 = potencia;
+
+  coeficiente = Number(coeficiente);
+  potencia = Number(potencia);
+
+  if (potencia != reserva2 || coeficiente != reserva) {
+    throw new Error("fudeu rapaziada");
+  } else {
+    coeficiente = [`${reserva}`, "/", "1"];
+    potencia    = [`${reserva2}`, "/", "1"];
+  }
+
+} catch (e) {
+  alert(e);
+
+  if (validar(reserva)) {
+    // corrige fração do coeficiente
+    let barra = reserva.split("/");
+    barra[2] = barra[1];
+    barra[1] = "/";
+    coeficiente = barra;
+    potencia    = [`${reserva2}`, "/", "1"];
+
+  } else if (validar(reserva2)) {
+    // corrige fração da potência
+    let barra = reserva2.split("/");
+    barra[2] = barra[1];
+    barra[1] = "/";
+    potencia = barra;
+  }
+}
+                  let obj = {
+                    coeficiente: coeficiente,
+                    variavel: variavel,
+                    potencia: potencia,
+                  };
+                  if (obj.coeficiente !== 1 || letras.includes(obj.variavel)) {
+                    resposta.push(obj);
+                  } else {
+                    console.log("não entrou: " + obj.variavel);
+                    if (obj.variavel == "∫") {
+                      conta = "integral";
+                    } else if (obj.variavel == "´") {
+                      conta = "´";
+                    } else if (obj.variavel == "MINMAX") {
+                      conta = "MinMax";
+                    } else if (obj.variavel == "Bs") {
+                      conta = "Bs";
+                    } else if (obj.variavel == "Pc") {
+                      conta = "Pc";
+                    } else if (conta == null) {
+                      conta = "normal";
+                    }
+                    //  else if(teste[contador].textContent != ""){
+                    //     conta = "normal"
+                    //   }
+                  }
+                }
+                // console.log(obj)
+                // console.log(resposta);
+
+                let operacao = [];
+                console.log("Operacao: ", conta);
+                console.log("Resultado: ", resposta);
+                console.log("Formula: ", formulaBruta);
+                if (conta == "∫") {
+                  resultao = integralTombo(resposta);
+                }
+                if (conta == "´") {
+                  // resultao = tombo(resposta)
+                  alert(tombo(resposta));
+                }
+                if (conta == "´´") {
+                  resultao = tombo(tombo(resposta));
+                }
+                if (conta == "Pc") {
+                  resultao = integralTombo(resposta);
+                }
+                if (conta == "a∫b") {
+                  resultado = newtonCotes(resposta, inicio, final, n);
+                }
+                if (conta == "Bis") {
+                  resultado = bisseccao(inicio, final, resposta);
+                }
+                //  console.log("teste", resposta);
+
+                //  const testeEnvio = await envio("/envio/string", "POST", resposta);
+              });
+
+              document.getElementById("btnGrafico").addEventListener("click", () => {
+                // <div id="box"></div>
+                let div = document.createElement("div");
+                div.innerHTML = `
+                <div id="spam">
+                 <div id="divGraf">
+                  <h3>Gráfico f(x) = ${formulaBruta}</h3>
+                  <button id="btnFechar">x</button>
+                 </div>
+                 <div id="box"></div>
+                </div>
+                `;
+
+                document.body.appendChild(div); // adiciona na página
+
+                const spam = document.getElementById("spam");
+                document.getElementById("btnFechar").addEventListener("click", () => {
+                  document.body.removeChild(document.body.lastElementChild);
+                });
+
+                const board = JXG.JSXGraph.initBoard("box", {
+                  boundingbox: [-10, 10, 10, -10],
+                  axis: true,
+                });
+
+                // função normal de JS
+                const f = new Function("x", `return ${formulaBruta}`);
+                board.create("functiongraph", [f, -100, 100]);
+              });
+            });
     </script>
   </body>
 </html>

@@ -178,9 +178,10 @@ function tombo(obj)
         return Math.floor(meio)
     }
 
-    function intervalo(obj){
-        let x = -100
-        while(x<100){
-            if(substituirX())
-        }
-    }
+    // function intervalo(obj){
+    //     let x = -100
+    //     while(x<100){
+    //         if(substituirX())
+    //     }
+    // }
+

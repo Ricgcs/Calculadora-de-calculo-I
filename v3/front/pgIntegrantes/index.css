@@ -1,0 +1,393 @@
+* {
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body.dark {
+  background-color: #222;
+  color: white;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+header {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+#menu {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1%;
+}
+
+#btnMenu {
+  height: 70%;
+  width: 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#btnMenu:hover {
+  cursor: pointer;
+}
+
+hr {
+  width: 100%;
+  height: 15%;
+  background-color: rgb(0, 0, 0);
+  border-radius: 5vw;
+}
+
+hr.white {
+  width: 100%;
+  height: 15%;
+  background-color: rgb(255, 255, 255);
+  border-radius: 5vw;
+}
+
+#container {
+  width: 25%;
+  height: 40%;
+}
+
+#corpoMenu {
+  background-color: rgb(234, 231, 231);
+  width: 20%;
+  height: 93%;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  /* estado inicial: visível */
+  transform: translateX(-100%);
+  
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* quando o menu está fechado */
+#corpoMenu.fechado {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#corpoMenu.dark{
+background-color: #232324;
+}
+
+.link {
+  width: 80%;
+  height: 10%;
+}
+
+.btnCorpoMenu {
+  background-color: rgba(116, 116, 116, 0.512);
+  color: white;
+  width: 100%;
+  height: 80%;
+  border-radius: 0.7vw;
+  margin-top: 10%;
+}
+
+#formula {
+  width: 80%;
+  height: 60%;
+  border: black solid 1px;
+  background-color: rgb(212, 212, 212);
+  display: flex;
+  align-items: center;
+  color: black;
+  overflow-y: hidden; /* 👈 troca Y por X */
+}
+
+.elemento {
+  height: auto;
+  width: auto;
+  display: flex;
+  /* background-color: aqua; */
+}
+
+#corpo {
+  width: auto;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+}
+
+#resultadoEquacao {
+  background-color: rgb(212, 212, 212);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 50%;
+  margin-top: 4%;
+  border: 1px rgb(46, 46, 46) solid;
+  justify-content: space-between;
+}
+
+#acoes {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 15%;
+  align-items: center;
+}
+
+.btnAcao {
+  display: flex;
+  height: 50%;
+  background-color: green;
+  color: white;
+  padding: 2%;
+  font-size: 50%;
+  margin-left: 5%;
+  align-items: center;
+  justify-content: center;
+}
+
+.divSubPotencia {
+  font-size: 0.6vw;
+}
+
+.divSubPotencia:hover {
+  border: solid rgb(0, 123, 255) 2px;
+}
+.elemento:hover {
+  border: solid black 2px;
+}
+
+#formula:hover {
+  cursor: pointer;
+}
+
+#buttonFormula {
+  background-color: yellow;
+  display: flex;
+  color: black;
+  width: auto;
+  padding: 1vw;
+  height: 60%;
+  font-size: 90%;
+  /* border-radius: 0.3vw; */
+  border: solid black 2px;
+  align-items: center;
+  justify-content: center;
+}
+
+#buttonFormula:hover {
+  cursor: pointer;
+  background-color: gray;
+  color: white;
+}
+.divSub {
+  /* font-size: 90%;
+    height: 50%;
+    width: auto;
+    padding: -100%; */
+}
+
+.divSub:hover {
+  border: solid black 1px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 25px;
+}
+
+/* Esconde o checkbox real */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Trilha do botão */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 25px;
+  transition: 0.4s;
+}
+
+/* Bolinha */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 3.5px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Quando o botão está ativado */
+input:checked + .slider {
+  background-color: #27294c;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+#box {
+
+  border: 1px solid black;
+  margin: auto;
+  background-color: rgb(224, 224, 224);
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#spam {
+  background: rgb(219, 219, 219);
+  margin-top: -35%;
+  border-radius: 1vw;
+  padding: 1%;
+  width: auto;
+  height: auto;
+}
+
+#btnFechar {
+  background-color: red;
+  color: white;
+  width: 3%;
+  height: 10%;
+}
+
+#divGraf {
+  display: flex;
+  justify-content: space-between;
+}
+
+p {
+  text-decoration: underline;
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.btocalcular {
+  font-size: 16px;
+  font-weight: 600;
+  background-color: yellow;
+  border: 2px solid black;
+  padding: 0 15px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+#resultadoFormula {
+  width: 100%;
+  height: 60%;
+}
+
+.botoes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+#botoes {
+  border: 2px solid black;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 0;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+}
+
+.numero {
+  background-color: rgb(128, 170, 255);
+}
+
+.operador {
+  background-color: #ffcc00;
+}
+
+.apagar {
+  background-color: rgb(255, 63, 63);
+}
+
+.passo-a-passo-container {
+  width: 350px;
+}
+
+.passo-a-passo {
+  margin-bottom: 15px;
+}
+
+.passo-box {
+  background-color: rgb(212, 212, 212);
+  border: 1px solid #999;
+  height: 120px; /* Caixa maior para o passo a passo */
+  padding: 8px;
+  overflow-y: auto;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.btopasso {
+  background-color: #cccccc;
+  width: 100%;
+}
+
+.valor-x-container {
+  display: flex;
+  align-items: center;
+}
+
+.valor-x-label {
+  font-weight: bold;
+  margin-right: 10px;
+  width: 80px; /* Largura fixa para alinhar */
+}
+
+.valor-x-input {
+  background-color: rgb(212, 212, 212);
+  border: 1px solid #999;
+  height: 30px; /* Caixa menor para o valor de X */
+  padding: 5px;
+  flex: 1;
+}
