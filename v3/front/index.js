@@ -20,9 +20,9 @@ function printExpr(e) {
         }
         if(e[i].potencia == null) e[i].variavel = "x"
 
-        coef = e[i].coeficiente.join("")
-        vari = e[i].variavel
-        pot = e[i].potencia.join("")
+        let coef = e[i].coeficiente.join("")
+        let vari = e[i].variavel
+        let pot = e[i].potencia.join("")
 
         e[i] = coef+vari+pot
     }

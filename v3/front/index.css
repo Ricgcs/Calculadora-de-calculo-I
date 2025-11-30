@@ -315,9 +315,26 @@ p {
   margin-left: 5px;
 }
 
+#titulo{
+  display: flex;
+  justify-content: center;
+}
+
+#barraTitulo{
+  background-color: black;
+  width: 100%;
+  height: 1%;
+  margin-top: -9.2%;
+}
+
 #resultadoFormula {
   width: 100%;
   height: 60%;
+  display: flex;
+  flex-direction: row;
+  /* background-color: #27294c; */
+  /* align-items: center; */
+  justify-content: center;
 }
 
 .botoes {
