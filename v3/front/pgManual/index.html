@@ -47,62 +47,58 @@
       </a>
     </div>
     <div id="participantesDiv">
-      <div id="pessoa">
-        <div id="imagemPessoa">
-          <h4 id="nomePessoa">Bruno</h4>
-          <img id="imgPessoa" src="./imgs/Caio.png" alt="" />
-        </div>
-        <div id="textoPessoa">
-          <h5>Documentação</h5>
-          <h5>Linkedin:</h5>
-        </div>
-      </div>
+<div class="slideshow">
+  <img id="img" src="../pgManual/imgs/funcionalidadePrincipal.png">
+</div>
 
-      <div id="pessoa">
-        <div id="imagemPessoa">
-          <h4 id="nomePessoa">Caio Cesar</h4>
-          <img id="imgPessoa" src="./imgs/Caio.png" alt="" />
-        </div>
-        <div id="textoPessoa">
-          <h5>Front-end</h5>
-          <h5>Linkedin:</h5>
-        </div>
-      </div>
-
-      <div id="pessoa">
-        <div id="imagemPessoa">
-          <h4 id="nomePessoa">Felipe Batista dos Santos</h4>
-          <img id="imgPessoaFelipe" src="./imgs/Felipe.png" alt="" />
-        </div>
-        <div id="textoPessoa">
-          <h5>Back-end</h5>
-          <h5>Linkedin: www.linkedin.com/in/felipe-santos-845340342</h5>
-        </div>
-      </div>
-
-      <div id="pessoa">
-        <div id="imagemPessoa">
-          <h4 id="nomePessoa">Juan Carlos Fedel dos Santos</h4>
-          <img id="imgPessoaJuan" src="./imgs/Juan.png" alt="" />
-        </div>
-        <div id="textoPessoa">
-          <h5>Design</h5>
-          <h5>Linkedin:</h5>
-        </div>
-      </div>
-
-      <div id="pessoa">
-        <div id="imagemPessoa">
-          <h4 id="nomePessoa">Ricardo Gabriel Camargo Soares</h4>
-          <img id="imgPessoaRicardo" src="./imgs/Ricardo.png" alt="" />
-        </div>
-        <div id="textoPessoa">
-          <h5>Front-end</h5>
-          <h5>Linkedin:</h5>
-        </div>
-      </div>
+<div id="btnImagens">
+<button id="btnTrocarAntes">Imagem anterior</button>
+<button id="btnTrocar">Próxima imagem</button>
+</div>
     </div>
     <script>
+        // Lista de várias imagens
+  const imagens = [
+    "../pgManual/imgs/funcionalidadePrincipal.png",
+    "../pgManual/imgs/funcaoHistorico.png",
+    "../pgManual/imgs/funcoes.png",
+    "../pgManual/imgs/funcaoGrafico.png",
+    "../pgManual/imgs/integrantes.png",
+    "../pgManual/imgs/modos.png",
+
+    
+  ];
+
+  let index = 0;
+
+  const img = document.getElementById("img");
+  const prox = document.getElementById("btnTrocar");
+  const ant = document.getElementById("btnTrocarAntes");
+
+  prox.addEventListener("click", () => {
+    img.classList.add("fade-out");
+
+    setTimeout(() => {
+      index = (index + 1) % imagens.length; // Loop infinito
+      img.src = imagens[index];
+
+      img.classList.remove("fade-out");
+    }); // Tempo do fade-out
+  });
+
+   ant.addEventListener("click", () => {
+    img.classList.add("fade-out");
+
+    setTimeout(() => {
+      index = (index - 1) % imagens.length; // Loop infinito
+      img.src = imagens[index];
+
+      img.classList.remove("fade-out");
+    }); // Tempo do fade-out
+  });
+
+
+
       const modo = document.getElementById("modo");
       const linhas = document.querySelectorAll("hr");
       const btnMenu = document.getElementById("btnMenu");

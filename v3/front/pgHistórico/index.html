@@ -11,9 +11,9 @@
   <body>
     <div id="menu">
       <div id="btnMenu">
-        <hr id="linha2" />
-        <hr id="linha2" />
-        <hr id="linha2" />
+        <hr id="linha" />
+        <hr id="linha" />
+        <hr id="linha" />
       </div>
       <div>
         <h1>CalcDer</h1>
@@ -320,7 +320,7 @@ if (/[a-zA-Z]/.test(c)) {
           divFooter.id = "divFooter";
           divCorpo.textContent = `${obj.formula} => ${obj.resultado} `;
           let linha = document.createElement("hr");
-          linha.id = "linha";
+          linha.id = "linha2";
           let btnResultado = document.createElement("button");
           btnResultado.id = "btnResultado";
           btnResultado.textContent = "Usar resultado";
