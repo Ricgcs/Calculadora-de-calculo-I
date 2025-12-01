@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./index.css" />
-    <title>CalcDer:Gráfico</title>
+    <title>CalcDer: Integrantes</title>
     <script src="../../libs/jsxgraphcore.js"></script>
     <link rel="stylesheet" href="../../libs/jsxgraphcore2.css" />
   </head>
@@ -34,7 +34,7 @@
         <button class="btnCorpoMenu">Gráfico</button>
       </a>
 
-      <a href="" class="link">
+      <a href="../pgHistórico/index.html" class="link">
         <button class="btnCorpoMenu">Histórico</button>
       </a>
 
@@ -42,41 +42,89 @@
         <button class="btnCorpoMenu">Manual</button>
       </a>
 
-      <a href="" class="link">
+      <a href="../pgIntegrantes/index.html" class="link">
         <button class="btnCorpoMenu">Integrantes</button>
       </a>
     </div>
-    <div id="box"></div>
+    <div id="participantesDiv">
+      <div id="pessoa">
+        <div id="imagemPessoa">
+          <h4 id="nomePessoa">Bruno</h4>
+          <img id="imgPessoa" src="./imgs/Caio.png" alt="" />
+        </div>
+        <div id="textoPessoa">
+          <h5>Documentação</h5>
+          <h5>Linkedin:</h5>
+        </div>
+      </div>
 
-    <div id="container">
-      <header>
-        <div id="formula"></div>
-        <button id="buttonFormula" class="btocalcular">Calcular</button>
-      </header>
+      <div id="pessoa">
+        <div id="imagemPessoa">
+          <h4 id="nomePessoa">Caio Cesar</h4>
+          <img id="imgPessoa" src="./imgs/Caio.png" alt="" />
+        </div>
+        <div id="textoPessoa">
+          <h5>Front-end</h5>
+          <h5>Linkedin:</h5>
+        </div>
+      </div>
+
+      <div id="pessoa">
+        <div id="imagemPessoa">
+          <h4 id="nomePessoa">Felipe Batista dos Santos</h4>
+          <img id="imgPessoaFelipe" src="./imgs/Felipe.png" alt="" />
+        </div>
+        <div id="textoPessoa">
+          <h5>Back-end</h5>
+          <h5>Linkedin:</h5>
+        </div>
+      </div>
+
+      <div id="pessoa">
+        <div id="imagemPessoa">
+          <h4 id="nomePessoa">Juan Carlos Fedel dos Santos</h4>
+          <img id="imgPessoaJuan" src="./imgs/Juan.png" alt="" />
+        </div>
+        <div id="textoPessoa">
+          <h5>Design</h5>
+          <h5>Linkedin:</h5>
+        </div>
+      </div>
+
+      <div id="pessoa">
+        <div id="imagemPessoa">
+          <h4 id="nomePessoa">Ricardo Gabriel Camargo Soares</h4>
+          <img id="imgPessoaRicardo" src="./imgs/Ricardo.png" alt="" />
+        </div>
+        <div id="textoPessoa">
+          <h5>Front-end</h5>
+          <h5>Linkedin:</h5>
+        </div>
+      </div>
     </div>
     <script>
-const modo = document.getElementById("modo");
-const linhas = document.querySelectorAll("hr");
-const btnMenu = document.getElementById("btnMenu");
-const corpoMenu = document.getElementById("corpoMenu");
+      const modo = document.getElementById("modo");
+      const linhas = document.querySelectorAll("hr");
+      const btnMenu = document.getElementById("btnMenu");
+      const corpoMenu = document.getElementById("corpoMenu");
 
-// 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
-const temaSalvo = localStorage.getItem("modoEscuro") === "true";
+      // 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
+      const temaSalvo = localStorage.getItem("modoEscuro") === "true";
 
-modo.checked = temaSalvo; // deixa o checkbox correto
-document.body.classList.toggle("dark", temaSalvo);
-linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
-corpoMenu.classList.toggle("dark", temaSalvo);
+      modo.checked = temaSalvo; // deixa o checkbox correto
+      document.body.classList.toggle("dark", temaSalvo);
+      linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
+      corpoMenu.classList.toggle("dark", temaSalvo);
 
-// 🔹 Quando o usuário mudar o modo, salva no localStorage
-modo.addEventListener("change", () => {
-  const escuroAtivo = modo.checked;
-  document.body.classList.toggle("dark", escuroAtivo);
-  linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
-  corpoMenu.classList.toggle("dark", escuroAtivo);
-  
-  localStorage.setItem("modoEscuro", escuroAtivo);
-});
+      // 🔹 Quando o usuário mudar o modo, salva no localStorage
+      modo.addEventListener("change", () => {
+        const escuroAtivo = modo.checked;
+        document.body.classList.toggle("dark", escuroAtivo);
+        linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
+        corpoMenu.classList.toggle("dark", escuroAtivo);
+
+        localStorage.setItem("modoEscuro", escuroAtivo);
+      });
 
       btnMenu.addEventListener("click", () => {
         corpoMenu.classList.toggle("fechado");
@@ -168,14 +216,13 @@ modo.addEventListener("change", () => {
           grafico.innerHTML = "";
           // adiciona na página
 
-     
           const board = JXG.JSXGraph.initBoard("box", {
             boundingbox: [-10, 10, 10, -10],
             axis: true,
           });
 
           // função normal de JS
-         
+
           const f = new Function("x", `return ${formulaBruta}`);
           board.create("functiongraph", [f, -10, 10]);
         }
@@ -256,7 +303,7 @@ modo.addEventListener("change", () => {
           if (!termosOcultos.includes(tecla)) {
             //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
             //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
-            
+
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
               (validar(anterior) !== true && validar(atual) == false) ||
@@ -387,7 +434,7 @@ modo.addEventListener("change", () => {
             elemento = stringDiv[a];
 
             teste = elemento.getElementsByTagName("div");
-            
+
             let tamanhoReal = teste.length;
             for (contador; contador < tamanhoReal; contador++) {
               let elmet = teste[contador];
@@ -447,14 +494,14 @@ modo.addEventListener("change", () => {
           //  console.log("teste", resposta);
 
           //  const testeEnvio = await envio("/envio/string", "POST", resposta);
-          graf()
+          graf();
         });
-          let timer;
-function atualizarGrafico() {
-  clearTimeout(timer);
-  timer = setTimeout(graf, 500);
-}
-atualizarGrafico()
+        let timer;
+        function atualizarGrafico() {
+          clearTimeout(timer);
+          timer = setTimeout(graf, 500);
+        }
+        atualizarGrafico();
         document.getElementById("btnGrafico").addEventListener("click", () => {
           alert("aaa");
           // <div id="box"></div>

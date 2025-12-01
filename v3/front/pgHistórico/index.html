@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./index.css" />
-    <title>CalcDer:Gráfico</title>
+    <title>CalcDer: Histórico</title>
     <script src="../../libs/jsxgraphcore.js"></script>
     <link rel="stylesheet" href="../../libs/jsxgraphcore2.css" />
   </head>
   <body>
     <div id="menu">
       <div id="btnMenu">
-        <hr id="linha" />
-        <hr id="linha" />
-        <hr id="linha" />
+        <hr id="linha2" />
+        <hr id="linha2" />
+        <hr id="linha2" />
       </div>
       <div>
         <h1>CalcDer</h1>
@@ -46,37 +46,32 @@
         <button class="btnCorpoMenu">Integrantes</button>
       </a>
     </div>
-    <div id="box"></div>
+    <div id="participantesDiv"></div>
 
-    <div id="container">
-      <header>
-        <div id="formula"></div>
-        <button id="buttonFormula" class="btocalcular">Calcular</button>
-      </header>
-    </div>
     <script>
-const modo = document.getElementById("modo");
-const linhas = document.querySelectorAll("hr");
-const btnMenu = document.getElementById("btnMenu");
-const corpoMenu = document.getElementById("corpoMenu");
+      const modo = document.getElementById("modo");
+      const linhas = document.querySelectorAll("hr");
+      const btnMenu = document.getElementById("btnMenu");
+      const corpoMenu = document.getElementById("corpoMenu");
+      const historicos = document.getElementById("participantesDiv");
 
-// 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
-const temaSalvo = localStorage.getItem("modoEscuro") === "true";
+      // 🔹 Ao carregar a página, verifica se o modo escuro estava ativado
+      const temaSalvo = localStorage.getItem("modoEscuro") === "true";
 
-modo.checked = temaSalvo; // deixa o checkbox correto
-document.body.classList.toggle("dark", temaSalvo);
-linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
-corpoMenu.classList.toggle("dark", temaSalvo);
+      modo.checked = temaSalvo; // deixa o checkbox correto
+      document.body.classList.toggle("dark", temaSalvo);
+      linhas.forEach((linha) => linha.classList.toggle("white", temaSalvo));
+      corpoMenu.classList.toggle("dark", temaSalvo);
 
-// 🔹 Quando o usuário mudar o modo, salva no localStorage
-modo.addEventListener("change", () => {
-  const escuroAtivo = modo.checked;
-  document.body.classList.toggle("dark", escuroAtivo);
-  linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
-  corpoMenu.classList.toggle("dark", escuroAtivo);
-  
-  localStorage.setItem("modoEscuro", escuroAtivo);
-});
+      // 🔹 Quando o usuário mudar o modo, salva no localStorage
+      modo.addEventListener("change", () => {
+        const escuroAtivo = modo.checked;
+        document.body.classList.toggle("dark", escuroAtivo);
+        linhas.forEach((linha) => linha.classList.toggle("white", escuroAtivo));
+        corpoMenu.classList.toggle("dark", escuroAtivo);
+
+        localStorage.setItem("modoEscuro", escuroAtivo);
+      });
 
       btnMenu.addEventListener("click", () => {
         corpoMenu.classList.toggle("fechado");
@@ -145,7 +140,164 @@ modo.addEventListener("change", () => {
         return res;
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
+      function transformarFormula(str) {
+        // remover espaços
+        str = str.replace(/\s+/g, "");
+
+        // trocar "^" por "Dead" temporariamente
+        str = str.replace(/\^/g, "Dead");
+
+        let out = "";
+        let i = 0;
+
+        while (i < str.length) {
+          // --- DETECTAR POTÊNCIA ---
+          if (str.startsWith("Dead", i)) {
+            i += 4; // pular "Dead"
+
+            // coletar expoente inteiro
+            let expo = "";
+            while (i < str.length && /[0-9]/.test(str[i])) {
+              expo += str[i];
+              i++;
+            }
+
+            // aplicar formato da potência
+            out += `;Dead;${expo};Enter;`;
+            continue;
+          }
+
+          // --- DETECTAR xDeadN (forma base) ---
+          // ex: xDead2
+          if (/[a-zA-Z]/.test(str[i]) && str.startsWith("Dead", i + 1)) {
+            out += str[i] + ";";
+            i++;
+            continue;
+          }
+
+          if (str[i] === "+") {
+            out += ";+;";
+            i++;
+            continue;
+          }
+
+          if (str[i] === "-") {
+            out += ";-;";
+            i++;
+            continue;
+          }
+
+          if (str[i] === "*") {
+            i++;
+            continue;
+          }
+
+          out += str[i];
+          i++;
+        }
+
+        return out;
+      }
+
+function parseFormula(str) {
+  str = str.replace(/\s+/g, ""); // remove espaços
+  const result = [];
+
+  let i = 0;
+
+  while (i < str.length) {
+    const c = str[i];
+
+    // ---------------------------------------------------
+    // 1) COEFICIENTE (números seguidos)
+    // ---------------------------------------------------
+    if (/[0-9]/.test(c)) {
+      let numero = "";
+
+      while (i < str.length && /[0-9]/.test(str[i])) {
+        numero += str[i];
+        i++;
+      }
+
+      result.push(numero);
+      continue;
+    }
+
+    // ---------------------------------------------------
+    // 2) POTÊNCIA EXPLÍCITA COM ^    (MANTIDO!)
+    // Ex: x^2 === x, Dead, 2, Enter
+    // ---------------------------------------------------
+    if (/[a-zA-Z]/.test(c) && str[i + 1] === "^") {
+      let base = c;
+      i += 2; // pula letra + "^"
+
+      let expo = "";
+      while (i < str.length && /[0-9]/.test(str[i])) {
+        expo += str[i];
+        i++;
+      }
+
+      result.push(base);
+      result.push("Dead");
+      result.push(expo);
+      result.push("Enter");
+      continue;
+    }
+
+    // ---------------------------------------------------
+    // 3) POTÊNCIA IMPLÍCITA (x2, y10 etc.)
+    // ---------------------------------------------------
+    if (/[a-zA-Z]/.test(c)) {
+      let base = c;
+      i++;
+
+      let expo = "";
+      while (i < str.length && /[0-9]/.test(str[i])) {
+        expo += str[i];
+        i++;
+      }
+
+      result.push(base);
+
+      if (expo.length > 0) {
+        result.push("Dead");
+        result.push(expo);
+        result.push("Enter");
+      }
+
+      continue;
+    }
+
+    // ---------------------------------------------------
+    // 4) Operadores
+    // ---------------------------------------------------
+    if ("+-/".includes(c)) {
+      result.push(c);
+      i++;
+      continue;
+    }
+
+    // ---------------------------------------------------
+    // 5) Ignorar *
+    // ---------------------------------------------------
+    if (c === "*") {
+      i++;
+      continue;
+    }
+
+    // ---------------------------------------------------
+    // 6) Qualquer outra coisa
+    // ---------------------------------------------------
+    result.push(c);
+    i++;
+  }
+
+  return result;
+}
+
+
+
+      document.addEventListener("DOMContentLoaded", async () => {
         let qtdElementos = 0;
         let qtdSubDivs = 0;
         const formula = document.getElementById("formula");
@@ -155,7 +307,47 @@ modo.addEventListener("change", () => {
         let ultDig = [];
         const elementoDiv = [];
         const elementoSubDiv = [];
+        const valoresHistóricos = await receber("/receber/string", "GET");
+        console.log("RESPOSTA BRUTA =", valoresHistóricos);
+        valoresHistóricos.forEach((obj) => {
+          let div = document.createElement("div");
+          div.id = "divHistorico";
+          let divHeader = document.createElement("div");
+          divHeader.id = "divHeader";
+          divHeader.textContent = `${obj.conta}`;
+          let divCorpo = document.createElement("div");
+          divCorpo.id = "divCorpo";
+          let divFooter = document.createElement("div");
+          divFooter.id = "divFooter";
+          divCorpo.textContent = `${obj.formula} => ${obj.resultado} `;
+          let linha = document.createElement("hr");
+          linha.id = "linha";
+          let btnResultado = document.createElement("button");
+          btnResultado.id = "btnResultado";
+          btnResultado.textContent = "Usar resultado";
+          let btnFormula = document.createElement("button");
+          btnFormula.textContent = "Usar fórmula";
+          btnFormula.id = "btnFormula";
 
+          div.appendChild(divHeader);
+          div.appendChild(linha);
+          div.appendChild(divCorpo);
+          div.appendChild(divFooter);
+          divFooter.appendChild(btnFormula);
+          divFooter.appendChild(btnResultado);
+          historicos.appendChild(div);
+
+          btnFormula.addEventListener("click",()=>{
+            localStorage.setItem("formula", JSON.stringify(parseFormula(obj.formula)));
+            window.location = "../index.html";
+          })
+
+          btnResultado.addEventListener("click",()=>{
+            localStorage.setItem("formula", JSON.stringify(parseFormula(obj.resultado)));
+
+            window.location = "../index.html";
+          })
+        });
         const buttonFormula = document.getElementById("buttonFormula");
 
         let div;
@@ -168,14 +360,13 @@ modo.addEventListener("change", () => {
           grafico.innerHTML = "";
           // adiciona na página
 
-     
           const board = JXG.JSXGraph.initBoard("box", {
             boundingbox: [-10, 10, 10, -10],
             axis: true,
           });
 
           // função normal de JS
-         
+
           const f = new Function("x", `return ${formulaBruta}`);
           board.create("functiongraph", [f, -10, 10]);
         }
@@ -256,7 +447,7 @@ modo.addEventListener("change", () => {
           if (!termosOcultos.includes(tecla)) {
             //  alert(`anterior: ${(anterior)}/${Number.isNaN(Number(anterior))} atual: ${(atual)}/${Number.isNaN(Number(atual))} comparação: ${ Number.isNaN(Number(anterior)) && Number.isNaN(Number(atual))}`)
             //  alert(`atual: ${numeros.includes(ultDig[ultDig.length-2]) } anterior: ${numeros.includes(ultDig[ultDig.length-1])}`)
-            
+
             if (
               (validar(anterior) !== false && validar(atual) == true) ||
               (validar(anterior) !== true && validar(atual) == false) ||
@@ -349,6 +540,21 @@ modo.addEventListener("change", () => {
           }
         }
 
+        async function receber(rota, metodo) {
+          try {
+            const envio = await fetch(`http://localhost:3000${rota}`, {
+              method: metodo,
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            let envio2 = await envio.json();
+            return envio2;
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
         window.adicionar = function (valor) {
           adicionarElemento(valor);
         };
@@ -387,7 +593,7 @@ modo.addEventListener("change", () => {
             elemento = stringDiv[a];
 
             teste = elemento.getElementsByTagName("div");
-            
+
             let tamanhoReal = teste.length;
             for (contador; contador < tamanhoReal; contador++) {
               let elmet = teste[contador];
@@ -447,16 +653,16 @@ modo.addEventListener("change", () => {
           //  console.log("teste", resposta);
 
           //  const testeEnvio = await envio("/envio/string", "POST", resposta);
-          graf()
+          graf();
         });
-          let timer;
-function atualizarGrafico() {
-  clearTimeout(timer);
-  timer = setTimeout(graf, 0);
-}
-atualizarGrafico()
+        let timer;
+        function atualizarGrafico() {
+          clearTimeout(timer);
+          timer = setTimeout(graf, 500);
+        }
+        atualizarGrafico();
         document.getElementById("btnGrafico").addEventListener("click", () => {
-          // alert("aaa");
+          alert("aaa");
           // <div id="box"></div>
           let grafico = document.getElementById("grafico");
           let div = document.createElement("div");

@@ -153,7 +153,7 @@ background-color: #232324;
 
 #acoes {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   height: 15%;
   width: 100%;
   align-items: center;
@@ -175,6 +175,25 @@ background-color: #232324;
   border: 1.9px black  solid;
 
 }
+
+
+.btnAcaoInvisivel {
+  display: flex;
+  height: 100%;
+  background-color: transparent;
+  color: white;
+  width: 30%;
+  padding: 1.5%;
+  /* margin-left: 5%; */
+  align-items: center;
+  justify-content: center;
+  font-size: 1vw;
+}
+.btnAcaoInvisivel:hover{
+  cursor:unset;
+}
+
+
 
 .divSubPotencia {
   font-size: 0.6vw;
@@ -271,10 +290,13 @@ input:checked + .slider:before {
 }
 
 #box {
-  width: 490px;
+  width: 500px;
   height: 390px;
-  border: 1px solid gray;
   margin: auto;
+  padding: 1%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #spam {
