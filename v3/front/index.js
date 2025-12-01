@@ -161,15 +161,17 @@ export function newtonCotes(obj,a,b,n){
 
 export function pontoCritico(exp,i,f){
     let derivada = tombo(exp)
-    if(i == null){
+    if(i == ''){
         i = -100
     }
-    if(f == null){
+    if(f == ''){
         f = 100
     }
+    i = Number(i)
+    f = Number(f)
     let raiz = acharTodasRaizes(derivada,i,f)
     let res = []
-    if(raiz.length) return res = "Não tem ponto critico"
+    if(raiz.length == 0) return res = "Não tem ponto critico"
     for(let r of raiz){
         let y = substituirX(exp,r)
         let derivada2 = tombo(tombo(exp))
@@ -218,7 +220,7 @@ export function bisseccao(inicio,fim,obj){
     return meio
 }
 
-export function acharTodasRaizes(obj, inicio, fim, passo = 0.1) {
+export function acharTodasRaizes(obj, inicio, fim, passo = 1) {
     let raizes = [];
 
     for (let x = inicio; x < fim; x += passo) {

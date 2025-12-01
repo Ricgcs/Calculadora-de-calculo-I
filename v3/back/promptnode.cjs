@@ -32,7 +32,9 @@ console.log("8 - Calculo Normal")
 console.log("0 - Para sair da calculadora")
 
 //A resposta do usuario é dividida em expressões e operadores, em um vetor.
-
+if(expressao == ''){
+    console.log("Precisa digitar uma expressão")
+}
 let separacao = expressao.split(" ")
 for(let i = 0;i<separacao.length;i++){
     //Qunando for operador ele apenas segue para outro elementos.

@@ -1,0 +1,3 @@
+Usar npm i
+Usar npm install prompt-Sync
+No Vscode Instalar a extensão Live Server para rodar o front (não precisa de internet para rodar)

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./index.css" />
+    <link rel="icon" href="./logo.png">
     <title>CalcDer</title>
     <script src="../libs/jsxgraphcore.js"></script>
 
@@ -17,7 +18,7 @@
         <hr id="linha" />
       </div>
       <div>
-        <h1 id = "tituloCalc">CalcDer</h1>
+        <h1 id="tituloCalc">CalcDer</h1>
       </div>
       <div>
         <label class="switch">
@@ -39,7 +40,7 @@
         <button class="btnCorpoMenu">Histórico</button>
       </a>
 
-      <a href="../pgManual/index.html" class="link">
+      <a href="../front/pgManual/index.html" class="link">
         <button class="btnCorpoMenu">Manual</button>
       </a>
 
@@ -378,7 +379,7 @@
 
         window.apagarTudo = function () {
           formula.innerHTML = "";
-          qtdElementos = 0;
+          // qtdElementos = 0;
         };
 
         let qtdElementos = 0;
@@ -677,42 +678,53 @@
               let reserva, reserva2, pos, tam;
               if (!especificadores.includes(variavel)) {
                 try {
+                  // Guarda os valores originais
                   reserva = coeficiente;
                   reserva2 = potencia;
 
+                  // Tenta converter para número
                   coeficiente = Number(coeficiente);
                   potencia = Number(potencia);
 
-                  if (potencia != reserva2 || coeficiente != reserva) {
-                    throw new Error("fudeu rapaziada");
-                  } else {
-                    coeficiente = [`${reserva}`, "/", "1"];
-                    potencia = [`${reserva2}`, "/", "1"];
-                  }
+                  if (isNaN(coeficiente)) coeficiente = reserva; // Se não for número, mantém string
+                  if (isNaN(potencia)) potencia = reserva2;
+
+                  // Padroniza tudo como array de fração
+                  coeficiente = coeficiente.toString().includes("/")
+                    ? (() => {
+                        let barra = coeficiente.split("/");
+                        barra[2] = barra[1];
+                        barra[1] = "/";
+                        return barra;
+                      })()
+                    : [reserva, "/", "1"];
+
+                  potencia = potencia.toString().includes("/")
+                    ? (() => {
+                        let barra = potencia.split("/");
+                        barra[2] = barra[1];
+                        barra[1] = "/";
+                        return barra;
+                      })()
+                    : [reserva2, "/", "1"];
                 } catch (e) {
-                  // alert(e);
-
+                  // fallback caso algo dê errado (mantém lógica antiga)
                   if (validar(reserva)) {
-                    // alert("barra2 ");
-
-                    // corrige fração do coeficiente
                     let barra = reserva.split("/");
-
                     barra[2] = barra[1];
                     barra[1] = "/";
                     coeficiente = barra;
-
-                    potencia = [`${reserva}`, "/", "1"];
+                  } else {
+                    coeficiente = [reserva, "/", "1"];
                   }
 
                   if (validar(reserva2)) {
-                    // corrige fração da potência
                     let barra = reserva2.split("/");
                     barra[2] = barra[1];
                     barra[1] = "/";
-                    // alert(barra);
-                    
                     potencia = barra;
+                  } else {
+                    potencia = [reserva2, "/", "1"];
                   }
                 }
               }
@@ -762,7 +774,7 @@
               resultadoDaFormula.textContent = `${printExpr(
                 integralTombo(resposta)
               )}`;
-              res = integralTombo(resposta);
+              res = printExpr(integralTombo(resposta));
               tipoConta = "Integral";
             }
             if (conta == "´") {
@@ -770,7 +782,7 @@
               titulo.textContent = "Derivada de 1° ordem  ";
               // alert(printExpr(tombo(resposta)));
               resultadoDaFormula.textContent = `${printExpr(tombo(resposta))}`;
-              res = tombo(resposta);
+              res = printExpr(tombo(resposta));
               tipoConta = "Derivada de primeira ordem";
               // alert(tombo(resposta));
             }
@@ -783,16 +795,17 @@
             if (conta == "Pc") {
               titulo.textContent = "Ponto crítico";
               let inicio = prompt("Inicio");
+              // console.log("inicio: ",inicio)
               let final = prompt("Final");
               if (inicio == "") {
-                inicio = null;
+                inicio = "";
               }
               if (final == "") {
-                final = null;
+                final = "";
               }
 
-              resultadoDaFormula.textContent = `${pontoCritico(resposta)}`;
-              res = pontoCritico(resposta);
+              resultadoDaFormula.textContent = `${pontoCritico(resposta,inicio,final)}`;
+              res = pontoCritico(resposta,inicio,final);
               tipoConta = "Ponto crítico";
             }
             if (conta === undefined) {
@@ -801,7 +814,7 @@
                 substituirX(resposta, 0)
               )}`;
               res = substituirX(resposta, 0);
-              console.log("Dalva", JSON.stringify(res));
+              // console.log("Dalva", JSON.stringify(res));
               tipoConta = "Normal";
             }
             if (conta == "Sx") {
@@ -839,7 +852,7 @@
 
             //  console.log("teste", resposta);
           }
-            if (especificadores.some((c) => formulaBruta.includes(c))) {
+          if (especificadores.some((c) => formulaBruta.includes(c))) {
             let nova = "";
 
             for (let a = 0; a < formulaBruta.length; a++) {
@@ -852,6 +865,7 @@
             formulaBruta = nova;
           }
           //
+          console.log("res",res);
           const testeEnvio = await envio("/envio/string", "POST", {
             formula: formulaBruta,
             resultado: res,
@@ -859,112 +873,110 @@
           });
         });
 
-
-
         function converterFormula(str) {
-  str = str.replace(/\s+/g, ""); // remove espaços
-  let out = "";
-  let i = 0;
+          str = str.replace(/\s+/g, ""); // remove espaços
+          let out = "";
+          let i = 0;
 
-  while (i < str.length) {
-    let c = str[i];
+          while (i < str.length) {
+            let c = str[i];
 
-    // 1) NÚMEROS
-    if (/[0-9]/.test(c)) {
-      let num = "";
+            // 1) NÚMEROS
+            if (/[0-9]/.test(c)) {
+              let num = "";
 
-      while (i < str.length && /[0-9]/.test(str[i])) {
-        num += str[i];
-        i++;
-      }
+              while (i < str.length && /[0-9]/.test(str[i])) {
+                num += str[i];
+                i++;
+              }
 
-      // Se próximo for letra → multiplicação implícita
-      if (str[i] && /[a-zA-Z]/.test(str[i])) out += num + "*";
-      else out += num;
+              // Se próximo for letra → multiplicação implícita
+              if (str[i] && /[a-zA-Z]/.test(str[i])) out += num + "*";
+              else out += num;
 
-      continue;
-    }
+              continue;
+            }
 
-    // 2) POTÊNCIA EXPLÍCITA x^2
-    if (/[a-zA-Z]/.test(c) && str[i + 1] === "^") {
-      let base = c;
-      i += 2; // pula x^
+            // 2) POTÊNCIA EXPLÍCITA x^2
+            if (/[a-zA-Z]/.test(c) && str[i + 1] === "^") {
+              let base = c;
+              i += 2; // pula x^
 
-      let expo = "";
-      while (i < str.length && /[0-9]/.test(str[i])) {
-        expo += str[i];
-        i++;
-      }
+              let expo = "";
+              while (i < str.length && /[0-9]/.test(str[i])) {
+                expo += str[i];
+                i++;
+              }
 
-      // Só coloca ** se NÃO houver barra (/)
-      if (str[i] === "/") {
-        out += base + "^" + expo;
-      } else {
-        out += base + "**" + expo;
-      }
+              // Só coloca ** se NÃO houver barra (/)
+              if (str[i] === "/") {
+                out += base + "^" + expo;
+              } else {
+                out += base + "**" + expo;
+              }
 
-      // Multiplicação implícita caso venha letra logo após
-      if (str[i] && /[a-zA-Z]/.test(str[i])) out += "*";
-      continue;
-    }
+              // Multiplicação implícita caso venha letra logo após
+              if (str[i] && /[a-zA-Z]/.test(str[i])) out += "*";
+              continue;
+            }
 
-    // 3) POTÊNCIA IMPLÍCITA x2 → x**2
-    if (/[a-zA-Z]/.test(c)) {
-      let base = c;
-      i++;
+            // 3) POTÊNCIA IMPLÍCITA x2 → x**2
+            if (/[a-zA-Z]/.test(c)) {
+              let base = c;
+              i++;
 
-      let expo = "";
-      let start = i;
+              let expo = "";
+              let start = i;
 
-      // pega números
-      while (i < str.length && /[0-9]/.test(str[i])) {
-        expo += str[i];
-        i++;
-      }
+              // pega números
+              while (i < str.length && /[0-9]/.test(str[i])) {
+                expo += str[i];
+                i++;
+              }
 
-      if (expo.length > 0 && str[i] !== "/") {
-        out += base + "**" + expo;
-      } else {
-        // devolve expoente como número normal
-        out += base;
+              if (expo.length > 0 && str[i] !== "/") {
+                out += base + "**" + expo;
+              } else {
+                // devolve expoente como número normal
+                out += base;
 
-        if (expo.length > 0) {
-          out += "*" + expo; 
+                if (expo.length > 0) {
+                  out += "*" + expo;
+                }
+              }
+
+              // multiplicação implícita caso venha letra após
+              if (str[i] && /[a-zA-Z]/.test(str[i])) out += "*";
+
+              continue;
+            }
+
+            // 4) Operadores
+            if ("+-/*()".includes(c)) {
+              out += c;
+              i++;
+              continue;
+            }
+
+            // 5) Ignorar *
+            if (c === "*") {
+              i++;
+              continue;
+            }
+
+            // 6) Tudo mais
+            out += c;
+            i++;
+          }
+
+          return out;
         }
-      }
-
-      // multiplicação implícita caso venha letra após
-      if (str[i] && /[a-zA-Z]/.test(str[i])) out += "*";
-
-      continue;
-    }
-
-    // 4) Operadores
-    if ("+-/*()".includes(c)) {
-      out += c;
-      i++;
-      continue;
-    }
-
-    // 5) Ignorar *
-    if (c === "*") {
-      i++;
-      continue;
-    }
-
-    // 6) Tudo mais
-    out += c;
-    i++;
-  }
-
-  return out;
-}
 
         document.getElementById("btnGrafico").addEventListener("click", () => {
           // <div id="box"></div>
           let div = document.createElement("div");
           // if (especificadores.some((c) => formulaBruta.includes(c))) {
-            let nova = "";
+          let nova = "";
 
           //   for (let a = 0; a < formulaBruta.length; a++) {
           //     if (!especificadores.includes(formulaBruta[a])) {
@@ -976,8 +988,8 @@
           //   // formulaBruta = resultadoDaFormula.textContent;
           // }
 
-            // console.log(formulaBruta)
-            nova = converterFormula(resultadoDaFormula.textContent);
+          // console.log(formulaBruta)
+          nova = converterFormula(resultadoDaFormula.textContent);
           div.innerHTML = `
                 <div id="spam">
                  <div id="divGraf">
@@ -992,8 +1004,6 @@
 
           const spam = document.getElementById("spam");
 
-
-          
           document.getElementById("btnFechar").addEventListener("click", () => {
             document.body.removeChild(document.body.lastElementChild);
           });
@@ -1011,9 +1021,10 @@
         btnReuso.addEventListener("click", () => {
           // alert("aqui");
           formula.innerHTML = "";
-          qtdElementos = 0;
+          // qtdElementos = 0;
 
-          let nova = parseFormula(nova);
+          let nova = "";
+          nova = parseFormula(resultadoDaFormula.textContent);
 
           for (let a = 0; a < nova.length; a++) {
             adicionarElemento(nova[a]);
