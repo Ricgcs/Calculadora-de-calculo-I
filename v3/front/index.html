@@ -39,7 +39,7 @@
         <button class="btnCorpoMenu">Histórico</button>
       </a>
 
-      <a href="" class="link">
+      <a href="../pgManual/index.html" class="link">
         <button class="btnCorpoMenu">Manual</button>
       </a>
 
@@ -68,8 +68,8 @@
           <button id="botoes" class="numero" onclick="adicionar('2')">2</button>
           <button id="botoes" class="numero" onclick="adicionar('3')">3</button>
 
-          <button id="botoes" class="operador" onclick="adicionar('√')">
-            √
+          <button id="botoes" class="operador" onclick="adicionar('Sx')">
+            Sx
           </button>
           <button id="botoes" class="operador" onclick="adicionar('/')">
             /
@@ -130,6 +130,11 @@
         substituirX,
         newtonCotes,
         bisseccao,
+        pontoCritico,
+        printExpr,
+        simplificarFracao,
+        niveis,
+        acharTodasRaizes,
       } from "../front/index.js";
 
       const modo = document.getElementById("modo");
@@ -166,9 +171,8 @@
       const sinais = ["+", "-"];
       const operadores = ["*"];
       const op2 = ["+", "-", "*"];
-      const pula = ["NC", "Bs", "Pc", "∫", "´"];
-
-      const especificadores = ["∫", "Bs", "Pc", "√", "NC", "´", "´´"];
+      const pula = ["∫", "Bs", "Pc", "Sx", "NC", "´", "´´"];
+      const especificadores = ["∫", "Bs", "Pc", "Sx", "NC", "´", "´´"];
 
       const termosOcultos = [
         "Shift",
@@ -617,7 +621,7 @@
               let valor = teste[contador].textContent.replace(/\s|\u00A0/g, "");
 
               let tamanho = tamanhoReal;
-              let pula = false;
+              let pulador = false;
 
               if (valor.trim().length > 0) {
                 // console.log("Aqui ", valor, elmet);
@@ -689,17 +693,25 @@
                   alert(e);
 
                   if (validar(reserva)) {
+                    alert("barra2 ");
+
                     // corrige fração do coeficiente
                     let barra = reserva.split("/");
+
                     barra[2] = barra[1];
                     barra[1] = "/";
                     coeficiente = barra;
-                    potencia = [`${reserva2}`, "/", "1"];
-                  } else if (validar(reserva2)) {
+
+                    potencia = [`${reserva}`, "/", "1"];
+                  }
+
+                  if (validar(reserva2)) {
                     // corrige fração da potência
                     let barra = reserva2.split("/");
                     barra[2] = barra[1];
                     barra[1] = "/";
+                    alert(barra);
+                    //vai se fuder camera
                     potencia = barra;
                   }
                 }
@@ -727,9 +739,12 @@
                   conta = "´´";
                 } else if (obj.variavel == "Pc") {
                   conta = "Pc";
+                } else if (obj.variavel == "Sx") {
+                  conta = "Sx";
                 } else if (conta == "undefined") {
                   conta = "normal";
                 }
+
                 //  else if(teste[contador].textContent != ""){
                 //     conta = "normal"
                 //   }
@@ -744,44 +759,68 @@
             console.log("Formula: ", formulaBruta);
             if (conta == "integral") {
               titulo.textContent = "Integral";
-              resultadoDaFormula.textContent = `${integralTombo(resposta)}`;
+              resultadoDaFormula.textContent = `${printExpr(
+                integralTombo(resposta)
+              )}`;
               res = integralTombo(resposta);
               tipoConta = "Integral";
             }
             if (conta == "´") {
               // resultao = tombo(resposta)
               titulo.textContent = "Derivada de 1° ordem  ";
-              resultadoDaFormula.textContent = `${tombo(resposta)}`;
+              alert(printExpr(tombo(resposta)));
+              resultadoDaFormula.textContent = `${printExpr(tombo(resposta))}`;
               res = tombo(resposta);
               tipoConta = "Derivada de primeira ordem";
               // alert(tombo(resposta));
             }
             if (conta == "´´") {
               titulo.textContent = "Derivada de 2° ordem  ";
-              resultadoDaFormula.textContent = `${tombo(tombo(resposta))}`;
+              resultadoDaFormula.textContent = `${printExpr(
+                tombo(tombo(resposta))
+              )}`;
             }
             if (conta == "Pc") {
               titulo.textContent = "Ponto crítico";
-              resultadoDaFormula.textContent = `${integralTombo(resposta)}`;
-              res = integralTombo(resposta);
+              let inicio = prompt("Inicio");
+              let final = prompt("Final");
+              if (inicio == "") {
+                inicio = null;
+              }
+              if (final == "") {
+                final = null;
+              }
+
+              resultadoDaFormula.textContent = `${pontoCritico(resposta)}`;
+              res = pontoCritico(resposta);
               tipoConta = "Ponto crítico";
             }
             if (conta === undefined) {
               titulo.textContent = "Normal";
-              resultadoDaFormula.textContent = `${substituirX(resposta, 0)}`;
-              res = integralTombo(substituirX(resposta, 0));
+              resultadoDaFormula.textContent = `${printExpr(
+                substituirX(resposta, 0)
+              )}`;
+              res = substituirX(resposta, 0);
+              console.log("Dalva", JSON.stringify(res));
               tipoConta = "Normal";
+            }
+            if (conta == "Sx") {
+              titulo.textContent = "Substituição";
+              let valorDeX = prompt("Por qual valor: ");
+              resultadoDaFormula.textContent = `${printExpr(
+                substituirX(resposta, valorDeX)
+              )}`;
+              res = substituirX(resposta, valorDeX);
+              console.log("Dalva", JSON.stringify(res));
+              tipoConta = "Substituição";
             }
             if (conta == "NC") {
               titulo.textContent = "Newton coetes";
               let inicio = prompt("Inicio");
               let final = prompt("Final");
               let n = prompt("N");
-              resultadoDaFormula.textContent = `${newtonCotes(
-                resposta,
-                inicio,
-                final,
-                n
+              resultadoDaFormula.textContent = `${printExpr(
+                newtonCotes(resposta, inicio, final, n)
               )}`;
               res = newtonCotes(resposta, inicio, final, n);
               tipoConta = "Newton Coetes";
@@ -791,16 +830,26 @@
               let inicio = prompt("Inicio");
               let final = prompt("Final");
               let n = prompt("N");
-              resultadoDaFormula.textContent = `${bisseccao(
-                inicio,
-                final,
-                resposta
+              resultadoDaFormula.textContent = `${printExpr(
+                bisseccao(inicio, final, resposta)
               )}`;
               res = bisseccao(inicio, final, resposta);
               tipoConta = "Bissecção";
             }
 
             //  console.log("teste", resposta);
+          }
+            if (especificadores.some((c) => formulaBruta.includes(c))) {
+            let nova = "";
+
+            for (let a = 0; a < formulaBruta.length; a++) {
+              if (!especificadores.includes(formulaBruta[a])) {
+                alert(formulaBruta[a])
+                nova += formulaBruta[a];
+              }
+            }
+
+            formulaBruta = nova;
           }
           //
           const testeEnvio = await envio("/envio/string", "POST", {
@@ -809,7 +858,7 @@
             conta: tipoConta,
           });
         });
-
+//vai tomar no cu cam
         document.getElementById("btnGrafico").addEventListener("click", () => {
           // <div id="box"></div>
           let div = document.createElement("div");
@@ -818,6 +867,7 @@
 
             for (let a = 0; a < formulaBruta.length; a++) {
               if (!especificadores.includes(formulaBruta[a])) {
+                alert(formulaBruta[a])
                 nova += formulaBruta[a];
               }
             }
@@ -853,7 +903,6 @@
         });
 
         btnReuso.addEventListener("click", () => {
-          
           // alert("aqui");
           formula.innerHTML = "";
           qtdElementos = 0;

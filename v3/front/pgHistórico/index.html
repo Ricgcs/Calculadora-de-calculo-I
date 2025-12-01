@@ -38,7 +38,7 @@
         <button class="btnCorpoMenu">Histórico</button>
       </a>
 
-      <a href="" class="link">
+      <a href="../pgManual/index.html" class="link">
         <button class="btnCorpoMenu">Manual</button>
       </a>
 
@@ -198,9 +198,8 @@
 
         return out;
       }
-
 function parseFormula(str) {
-  str = str.replace(/\s+/g, ""); // remove espaços
+  str = str.replace(/\s+/g, ""); 
   const result = [];
 
   let i = 0;
@@ -208,9 +207,7 @@ function parseFormula(str) {
   while (i < str.length) {
     const c = str[i];
 
-    // ---------------------------------------------------
-    // 1) COEFICIENTE (números seguidos)
-    // ---------------------------------------------------
+    // 1) COEFICIENTE
     if (/[0-9]/.test(c)) {
       let numero = "";
 
@@ -223,13 +220,10 @@ function parseFormula(str) {
       continue;
     }
 
-    // ---------------------------------------------------
-    // 2) POTÊNCIA EXPLÍCITA COM ^    (MANTIDO!)
-    // Ex: x^2 === x, Dead, 2, Enter
-    // ---------------------------------------------------
+    // 2) POTÊNCIA EXPLÍCITA x^2
     if (/[a-zA-Z]/.test(c) && str[i + 1] === "^") {
       let base = c;
-      i += 2; // pula letra + "^"
+      i += 2; 
 
       let expo = "";
       while (i < str.length && /[0-9]/.test(str[i])) {
@@ -240,54 +234,59 @@ function parseFormula(str) {
       result.push(base);
       result.push("Dead");
       result.push(expo);
-      result.push("Enter");
+        if (str[i] !== "/") {
+    result.push("Enter");
+  }
       continue;
     }
 
-    // ---------------------------------------------------
-    // 3) POTÊNCIA IMPLÍCITA (x2, y10 etc.)
-    // ---------------------------------------------------
-    if (/[a-zA-Z]/.test(c)) {
-      let base = c;
-      i++;
+   // 3) POTÊNCIA IMPLÍCITA (x2, y10 etc.)
+if (/[a-zA-Z]/.test(c)) {
+  let base = c;
+  i++;
 
-      let expo = "";
-      while (i < str.length && /[0-9]/.test(str[i])) {
-        expo += str[i];
-        i++;
-      }
+  let expo = "";
+  let start = i;
 
-      result.push(base);
+  // coleta números
+  while (i < str.length && /[0-9]/.test(str[i])) {
+    expo += str[i];
+    i++;
+  }
 
-      if (expo.length > 0) {
-        result.push("Dead");
-        result.push(expo);
-        result.push("Enter");
-      }
+  result.push(base);
 
-      continue;
-    }
 
-    // ---------------------------------------------------
+  if (str[i] === "/") {
+    // NÃO ADICIONA ENTER
+    // devolve expoente para ser lido como número normal
+    i = start;
+    continue;
+  }
+
+  // SE CHEGOU AQUI → potência válida
+  if (expo.length > 0) {
+    result.push("Dead");
+    result.push(expo);
+    result.push("Enter"); // ← agora só entra aqui se realmente terminou
+  }
+
+  continue;
+}
     // 4) Operadores
-    // ---------------------------------------------------
     if ("+-/".includes(c)) {
       result.push(c);
       i++;
       continue;
     }
 
-    // ---------------------------------------------------
     // 5) Ignorar *
-    // ---------------------------------------------------
     if (c === "*") {
       i++;
       continue;
     }
 
-    // ---------------------------------------------------
-    // 6) Qualquer outra coisa
-    // ---------------------------------------------------
+    // 6) Outros
     result.push(c);
     i++;
   }
@@ -339,6 +338,7 @@ function parseFormula(str) {
 
           btnFormula.addEventListener("click",()=>{
             localStorage.setItem("formula", JSON.stringify(parseFormula(obj.formula)));
+            alert(parseFormula(obj.formula))
             window.location = "../index.html";
           })
 
